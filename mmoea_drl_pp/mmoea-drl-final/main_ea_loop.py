@@ -37,10 +37,9 @@ def run_evolution(
 ):
     
 
-
-
     # Step 1: Initialize
     population = initialize_population(pop_size, num_tasks, num_robots)
+    print(population[0])  # Print first individual for debugging
 
     for gen in range(generations):
         # print(f"\n--- Generation {gen} ---")
@@ -50,6 +49,7 @@ def run_evolution(
 
         # Step 3: Evaluate
         objective_values = evaluate_population(population, drl_planner)
+        
 
         # Step 4: Assign fronts
         fronts = assign_fronts(objective_values)
@@ -91,7 +91,7 @@ def run_evolution(
 
 
 if __name__ == "__main__":
-    NUM_TASKS = 20
+    NUM_TASKS = 10
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)
     # Load DRL model once
@@ -99,9 +99,9 @@ if __name__ == "__main__":
 
     final_pop, final_objs = run_evolution(
         num_tasks=NUM_TASKS,
-        num_robots=3,
+        num_robots=4,
         pop_size=20,
-        generations=100,
+        generations=10,
         num_clusters=4,
         drl_planner=evaluate_drl_lns
     )
@@ -114,6 +114,8 @@ if __name__ == "__main__":
     
     plot_pareto_front(final_objs, title="Final Pareto Front", save_path="results/pareto_front.png")
     plot_best_solution(best_solution, title="Best Multi-Robot Path", save_path="results/best_solution.png")
+
+    
 
     # print("\nFinal Pareto Front (Objective Space):")
     # for i, obj in enumerate(final_objs):

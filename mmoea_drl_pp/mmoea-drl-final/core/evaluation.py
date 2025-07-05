@@ -1,4 +1,4 @@
-# from drl.planner_interface import evaluate_drl
+from drl.planner_interface import evaluate_drl
 
 def evaluate_individual(individual, drl_planner):
     """
@@ -33,3 +33,4 @@ def evaluate_individual(individual, drl_planner):
 #     f1, f2 = evaluate_individual(ind, fake_drl_planner)
 #     print("Total Path Length (f1):", f1)
 #     print("Time Taken (f2):", f2)
+

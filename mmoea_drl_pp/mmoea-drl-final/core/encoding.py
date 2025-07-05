@@ -7,21 +7,28 @@ def generate_individual(num_tasks, num_robots):
     tasks = list(range(num_tasks))
     random.shuffle(tasks)
 
-    # Generate random split sizes that sum to num_tasks
-    split_sizes = [0] * num_robots
-    for _ in range(num_tasks):
-        split_sizes[random.randint(0, num_robots - 1)] += 1
+    # Evenly distribute tasks (some robots may have 1 more/less)
+    splits = np.array_split(tasks, num_robots)
+    return [list(s) for s in splits]
 
-    # Distribute tasks accordingly
-    individual = []
-    index = 0
-    for size in split_sizes:
-        individual.append(tasks[index:index+size])
-        index += size
-    # Ensure all tasks are assigned
-    assert sum(split_sizes) == num_tasks, "Not all tasks assigned!"
-    print(individual)
-    return individual
+    # tasks = list(range(num_tasks))
+    # random.shuffle(tasks)
+
+    # # Generate random split sizes that sum to num_tasks
+    # split_sizes = [0] * num_robots
+    # for _ in range(num_tasks):
+    #     split_sizes[random.randint(0, num_robots - 1)] += 1
+
+    # # Distribute tasks accordingly
+    # individual = []
+    # index = 0
+    # for size in split_sizes:
+    #     individual.append(tasks[index:index+size])
+    #     index += size
+    # # Ensure all tasks are assigned
+    # assert sum(split_sizes) == num_tasks, "Not all tasks assigned!"
+    # # print(individual)
+    # return individual
 
 
 

@@ -9,6 +9,7 @@ from tqdm import tqdm # For LNS progress bar
 
 
 ACTOR_MODEL = None
+np.random.seed(42)
 
 # ----- Actor (Unified Class) - IDENTICAL to your training setup -----
 # This class is needed to load the state_dict from your .pth file.
@@ -296,11 +297,13 @@ def evaluate_drl(robot_id, task_seq):
     # Handle empty task list
     if not task_seq:
         return 0.0  # No path, no length
+    # print(f"Evaluating DRL for Robot {robot_id} with tasks: {task_seq}")
 
     # Add depot coordinate at start
     depot_coord = ROBOT_DEPOTS[robot_id]
     # task_seq = [tid for tid in task_seq if tid not in [0, 1, 2]]
     coords = [depot_coord] + [TASK_COORDINATES[tid] for tid in task_seq]
+    
 
     coords_np = np.array(coords, dtype=np.float32)
     coords_tensor = torch.from_numpy(coords_np)
@@ -354,9 +357,10 @@ def evaluate_drl_lns(robot_id, task_seq):
 TASK_COORDINATES = {}
 
 ROBOT_DEPOTS = {
-    0: (0.1, 0.5),   # Robot 0's base
-    1: (0.9, 0.5),   # Robot 1's base
-    2: (0.5, 0.9),   # Robot 2's base
+    0: (0.55, 0.85),   # Robot 0's base
+    1: (0.85, 0.55),   # Robot 1's base
+    2: (0.15, 0.2),   # Robot 2's base
+    3: (0.2, 0.8),     # Robot 3's base
 }
 
 
@@ -375,11 +379,11 @@ def generate_task_coordinates(num_tasks):
 
     # Random positions for other tasks
     for tid in range(0, num_tasks):
-        x = round(random.uniform(0, 1), 3)
-        y = round(random.uniform(0, 1), 3)
+        x = round(random.uniform(0, 1), 5)
+        y = round(random.uniform(0, 1), 5)
         TASK_COORDINATES[tid] = (x, y)
     #print the TASK_COORDINATES
-    # print(f"Generated TASK_COORDINATES: {TASK_COORDINATES}")
+    print(f"Generated TASK_COORDINATES: {TASK_COORDINATES}")
 
 
 # --- Main Execution Block ---
@@ -462,3 +466,4 @@ if __name__ == '__main__':
         print("Please ensure you have run the training script and the model file exists.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+
