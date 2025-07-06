@@ -296,7 +296,7 @@ def evaluate_drl(robot_id, task_seq):
 
     # Handle empty task list
     if not task_seq:
-        return 0.0  # No path, no length
+        return 0.0,[]  # No path, no length
     # print(f"Evaluating DRL for Robot {robot_id} with tasks: {task_seq}")
 
     # Add depot coordinate at start
@@ -308,10 +308,14 @@ def evaluate_drl(robot_id, task_seq):
     coords_np = np.array(coords, dtype=np.float32)
     coords_tensor = torch.from_numpy(coords_np)
 
-    _, _, reward = infer_tour_single_instance(ACTOR_MODEL, coords_tensor)
+    tour_indices, _, reward = infer_tour_single_instance(ACTOR_MODEL, coords_tensor)
     path_length = -reward
 
-    return path_length
+    # Convert DRL tour indices back to task IDs
+    # tour_indices[0] is depot (0), so ignore it
+    optimized_sequence = [task_seq[i - 1] for i in tour_indices if i != 0]
+
+    return path_length, optimized_sequence
 
 def evaluate_drl_lns(robot_id, task_seq):
     global TASK_COORDINATES, ACTOR_MODEL
@@ -320,7 +324,7 @@ def evaluate_drl_lns(robot_id, task_seq):
         raise ValueError("Call init_drl_model() first to load the DRL model.")
 
     if not task_seq:
-        return 0.0  # No path, no travel
+        return 0.0,[]  # No path, no travel
 
     # Add depot coordinate at start
     depot_coord = ROBOT_DEPOTS[robot_id]
@@ -350,8 +354,9 @@ def evaluate_drl_lns(robot_id, task_seq):
         initial_temp,
         cooling
     )
-
-    return refined_cost
+    optimized_sequence = [task_seq[i - 1] for i in refined_tour_indices if i != 0]
+    
+    return refined_cost, optimized_sequence
 
 
 TASK_COORDINATES = {}

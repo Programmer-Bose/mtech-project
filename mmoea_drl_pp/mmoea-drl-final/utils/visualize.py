@@ -27,7 +27,7 @@ def plot_best_solution(individual, title="Best Solution", save_path=None):
         # Build full path from depot → tasks
         # task_seq = [tid for tid in task_seq if tid >= 3]
         coords = [depot] + [planner_interface.TASK_COORDINATES[tid] for tid in task_seq] + [depot]
-        print(f"Robot {r+1} path: {coords}")  # Debugging output
+        # print(f"Robot {r+1} path: {coords}")  # Debugging output
 
         xs, ys = zip(*coords)
         plt.plot(xs, ys, color=color, linewidth=2, label=f'Robot {r+1}')

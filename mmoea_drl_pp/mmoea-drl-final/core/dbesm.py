@@ -9,7 +9,7 @@ def euclidean_distance(a, b):
     b = b + [0] * (max_len - len(b))
     return np.linalg.norm(np.array(a) - np.array(b))
 
-def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
+def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.7):
     current_rank = front_ranks[index]
     current_vector = flattened_pop[index]
 
@@ -19,9 +19,9 @@ def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
     if not candidates:
         return index  # fallback: no better fronts
 
-    # Step 2: Among those, pick top-CSCD elites (top 50%)
+    # Step 2: Among those, pick top-CSCD elites (top F%)
     cscd_vals = [cscd_scores[i] for i in candidates]
-    threshold = np.percentile(cscd_vals, 50)
+    threshold = np.percentile(cscd_vals, F*100)
     elites = [i for i in candidates if cscd_scores[i] >= threshold]
 
     if not elites:
@@ -33,7 +33,7 @@ def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
     return exemplar_idx
 
 
-def generate_offspring(parent, exemplar, mutation_prob=0.5):
+def generate_offspring(parent, exemplar, mutation_prob=0.7):
     """
     Args:
         parent, exemplar: both are list-of-lists task sequences (robot-wise)

@@ -1,4 +1,5 @@
-from core.encoding import generate_individual, flatten_individual
+import time
+from core.encoding import generate_individual, flatten_individual,remove_duplicates
 from core.evaluation import evaluate_individual
 from core.clustering import cluster_population
 from core.cscd import compute_cscd_scores
@@ -8,6 +9,11 @@ from drl.planner_interface import generate_task_coordinates, init_drl_model, eva
 from utils.plot import plot_pareto_front
 from utils.visualize import plot_best_solution
 import random
+from tqdm import tqdm
+import time
+
+
+sP = 1  # Scale factor for DBESM offspring generation
 
 def initialize_population(pop_size, num_tasks, num_robots):
     return [generate_individual(num_tasks, num_robots) for _ in range(pop_size)]
@@ -33,23 +39,27 @@ def run_evolution(
     pop_size=20,
     generations=40,
     num_clusters=5,
-    drl_planner=lambda r, s: len(s) * 10  # dummy DRL
+    drl_planner=evaluate_drl,
+    drl_last_gen=evaluate_drl_lns
 ):
     
 
     # Step 1: Initialize
     population = initialize_population(pop_size, num_tasks, num_robots)
-    print(population[0])  # Print first individual for debugging
+    # print(population[0])  # Print first individual for debugging
 
-    for gen in range(generations):
+    for gen in tqdm(range(generations), desc="Evolution Progress"):
         # print(f"\n--- Generation {gen} ---")
 
         # Step 2: Flatten
         flattened = flatten_population(population)
 
         # Step 3: Evaluate
-        objective_values = evaluate_population(population, drl_planner)
-        
+        if gen < generations - 1:
+            # Use DRL planner for all generations except the last
+            objective_values = evaluate_population(population, drl_planner)
+        else:
+            objective_values = evaluate_population(population, drl_last_gen)
 
         # Step 4: Assign fronts
         fronts = assign_fronts(objective_values)
@@ -61,12 +71,19 @@ def run_evolution(
         cscd_scores = compute_cscd_scores(flattened, objective_values, clusters, fronts)
 
         # Step 7: DBESM offspring generation
-        offspring = dbesm_selection(population, flattened, fronts, cscd_scores)
+        offspring = dbesm_selection(sP * population, flattened, fronts, cscd_scores)
 
         # Combine populations
         combined_population = population + offspring
+        # combined_flattened = flatten_population(combined_population)
+        if gen < generations - 1:
+            # Use DRL planner for all generations except the last
+            combined_objectives = evaluate_population(combined_population, drl_planner)
+        else:
+            combined_objectives = evaluate_population(combined_population, drl_last_gen)
+
+        combined_population, combined_objectives = remove_duplicates(combined_population, combined_objectives)
         combined_flattened = flatten_population(combined_population)
-        combined_objectives = evaluate_population(combined_population, drl_planner)
 
         # Recalculate fronts, clusters, CSCD for selection
         combined_fronts = assign_fronts(combined_objectives)
@@ -80,18 +97,19 @@ def run_evolution(
             combined_flattened,
             combined_fronts,
             combined_cscd,
-            pop_size
+            int(pop_size)
         )
 
         # Optional: Print best
         best = min(objective_values, key=lambda x: (x[0], x[1]))
-        print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
+        # tqdm.write(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
+        # print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
     
     return population, objective_values
 
 
 if __name__ == "__main__":
-    NUM_TASKS = 10
+    NUM_TASKS = 20
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)
     # Load DRL model once
@@ -99,21 +117,37 @@ if __name__ == "__main__":
 
     final_pop, final_objs = run_evolution(
         num_tasks=NUM_TASKS,
-        num_robots=4,
-        pop_size=20,
-        generations=10,
+        num_robots=3,
+        pop_size=200,
+        generations=500,
         num_clusters=4,
-        drl_planner=evaluate_drl_lns
+        drl_planner=evaluate_drl,
+        drl_last_gen=evaluate_drl_lns
     )
 
-    best_idx = final_objs.index(min(final_objs, key=lambda x: (x[0], x[1])))
-    best_solution = final_pop[best_idx]
-    print(f"\nBest Solution (f1, f2): {final_objs[best_idx]} at index {best_idx}")
-    print(f"Best Solution (Decision Space): {best_solution}")
+    # best_idx = final_objs.index(min(final_objs, key=lambda x: (x[0], x[1])))
+    # best_solution = final_pop[best_idx]
+    # print(f"\nBest Solution (f1, f2): {final_objs[best_idx]} at index {best_idx}")
+    # print(f"Best Solution (Decision Space): {best_solution}")
 
     
-    plot_pareto_front(final_objs, title="Final Pareto Front", save_path="results/pareto_front.png")
-    plot_best_solution(best_solution, title="Best Multi-Robot Path", save_path="results/best_solution.png")
+    # plot_pareto_front(final_objs, title="Final Pareto Front", save_path="results/pareto_front.png")
+    # plot_best_solution(best_solution, title="Best Multi-Robot Path", save_path="results/best_solution.png")
+
+    # Step 1: Get top 5
+    sorted_indices = sorted(range(len(final_objs)), key=lambda i: (final_objs[i][0], final_objs[i][1]))
+    top_indices = sorted_indices[:10]
+    top_solutions = [final_pop[i] for i in top_indices]
+    top_objectives = [final_objs[i] for i in top_indices]
+
+    # # Step 2: Plot top 10 paths
+    for idx, (sol, obj) in enumerate(zip(top_solutions, top_objectives)):
+        title = f"Top {idx+1} Path - f1={obj[0]:.2f}, f2={obj[1]:.2f}"
+        save_path = f"results/path_sol_{time.strftime('%Y%m%d_%H%M%S')}_top_{idx+1}.png"
+        plot_best_solution(sol, title=title, save_path=save_path)
+
+    # Step 3: Pareto plot with highlights
+    plot_pareto_front(top_objectives, title="Final Pareto Front", save_path=f"results/pareto_{time.strftime('%Y%m%d_%H%M%S')}.png")
 
     
 
