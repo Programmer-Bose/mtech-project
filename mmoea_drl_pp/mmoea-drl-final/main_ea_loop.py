@@ -112,11 +112,11 @@ def run_evolution(
 
 if __name__ == "__main__":
     #Hyperparameters
-    NUM_TASKS = 40
-    NUM_ROBOTS = 4
+    NUM_TASKS = 20
+    NUM_ROBOTS = 3
     POP_SIZE = 100
     GENERATIONS = 50
-    NUM_CLUSTERS = 5
+    NUM_CLUSTERS = 4
 
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)

@@ -364,7 +364,7 @@ TASK_COORDINATES = {}
 ROBOT_DEPOTS = {
     0: (0.05, 0.05),   # Robot 0's base
     1: (0.05, 0.95),   # Robot 1's base
-    2: (0.95, 0.05),   # Robot 2's base
+    2: (0.95, 0.5),   # Robot 2's base
     3: (0.95, 0.95),   # Robot 3's base
     4: (0.5, 0.05),   # Robot 4's base
     5: (0.5, 0.95),   # Robot 5's base
