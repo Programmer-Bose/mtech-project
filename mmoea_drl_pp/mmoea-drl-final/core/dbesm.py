@@ -9,7 +9,7 @@ def euclidean_distance(a, b):
     b = b + [0] * (max_len - len(b))
     return np.linalg.norm(np.array(a) - np.array(b))
 
-def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.7):
+def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
     current_rank = front_ranks[index]
     current_vector = flattened_pop[index]
 
@@ -33,7 +33,7 @@ def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.7):
     return exemplar_idx
 
 
-def generate_offspring(parent, exemplar, mutation_prob=0.7):
+def generate_offspring(parent, exemplar, mutation_prob=0.5):
     """
     Args:
         parent, exemplar: both are list-of-lists task sequences (robot-wise)

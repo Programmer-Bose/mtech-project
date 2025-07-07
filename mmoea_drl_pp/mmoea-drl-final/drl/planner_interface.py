@@ -362,10 +362,13 @@ def evaluate_drl_lns(robot_id, task_seq):
 TASK_COORDINATES = {}
 
 ROBOT_DEPOTS = {
-    0: (0.55, 0.85),   # Robot 0's base
-    1: (0.85, 0.55),   # Robot 1's base
-    2: (0.15, 0.2),   # Robot 2's base
-    3: (0.2, 0.8),     # Robot 3's base
+    0: (0.05, 0.05),   # Robot 0's base
+    1: (0.05, 0.95),   # Robot 1's base
+    2: (0.95, 0.05),   # Robot 2's base
+    3: (0.95, 0.95),   # Robot 3's base
+    4: (0.5, 0.05),   # Robot 4's base
+    5: (0.5, 0.95),   # Robot 5's base
+
 }
 
 

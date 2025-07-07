@@ -10,7 +10,7 @@ from utils.plot import plot_pareto_front
 from utils.visualize import plot_best_solution
 import random
 from tqdm import tqdm
-import time
+import pandas as pd
 
 
 sP = 1  # Scale factor for DBESM offspring generation
@@ -101,15 +101,23 @@ def run_evolution(
         )
 
         # Optional: Print best
-        best = min(objective_values, key=lambda x: (x[0], x[1]))
+        # best = min(objective_values, key=lambda x: (x[0], x[1]))
         # tqdm.write(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
         # print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
+
+
     
     return population, objective_values
 
 
 if __name__ == "__main__":
-    NUM_TASKS = 20
+    #Hyperparameters
+    NUM_TASKS = 40
+    NUM_ROBOTS = 4
+    POP_SIZE = 100
+    GENERATIONS = 50
+    NUM_CLUSTERS = 5
+
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)
     # Load DRL model once
@@ -117,38 +125,42 @@ if __name__ == "__main__":
 
     final_pop, final_objs = run_evolution(
         num_tasks=NUM_TASKS,
-        num_robots=3,
-        pop_size=200,
-        generations=500,
-        num_clusters=4,
+        num_robots=NUM_ROBOTS,
+        pop_size=POP_SIZE,
+        generations=GENERATIONS,
+        num_clusters=NUM_CLUSTERS,
         drl_planner=evaluate_drl,
         drl_last_gen=evaluate_drl_lns
     )
 
     # best_idx = final_objs.index(min(final_objs, key=lambda x: (x[0], x[1])))
-    # best_solution = final_pop[best_idx]
-    # print(f"\nBest Solution (f1, f2): {final_objs[best_idx]} at index {best_idx}")
-    # print(f"Best Solution (Decision Space): {best_solution}")
+    best_idx = final_objs.index(min(final_objs, key=lambda x: (x[1], x[0])))
+    best_solution = final_pop[best_idx]
+    print(f"\nBest Solution (f1, f2): {final_objs[best_idx]} at index {best_idx}")
+    print(f"Best Solution (Decision Space): {best_solution}")
 
     
-    # plot_pareto_front(final_objs, title="Final Pareto Front", save_path="results/pareto_front.png")
-    # plot_best_solution(best_solution, title="Best Multi-Robot Path", save_path="results/best_solution.png")
+    plot_pareto_front(final_objs, title="Final Pareto Front", save_path=f"results/pareto_front_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plot_best_solution(best_solution, title=f"Best Path-{final_objs[best_idx]}", save_path=f"results/best_solution_{time.strftime('%Y%m%d_%H%M%S')}.png")
 
-    # Step 1: Get top 5
-    sorted_indices = sorted(range(len(final_objs)), key=lambda i: (final_objs[i][0], final_objs[i][1]))
-    top_indices = sorted_indices[:10]
-    top_solutions = [final_pop[i] for i in top_indices]
-    top_objectives = [final_objs[i] for i in top_indices]
 
-    # # Step 2: Plot top 10 paths
-    for idx, (sol, obj) in enumerate(zip(top_solutions, top_objectives)):
-        title = f"Top {idx+1} Path - f1={obj[0]:.2f}, f2={obj[1]:.2f}"
-        save_path = f"results/path_sol_{time.strftime('%Y%m%d_%H%M%S')}_top_{idx+1}.png"
-        plot_best_solution(sol, title=title, save_path=save_path)
-
-    # Step 3: Pareto plot with highlights
-    plot_pareto_front(top_objectives, title="Final Pareto Front", save_path=f"results/pareto_{time.strftime('%Y%m%d_%H%M%S')}.png")
-
+    # Save final population and their objectives to CSV
+    # Each row: f1, f2, robot_1, robot_2, ..., robot_N
+    data = []
+    for ind, obj in zip(final_pop, final_objs):
+        row = {
+            'f1': obj[0],
+            'f2': obj[1]
+        }
+        # Each robot's task list as a string
+        for i, robot_tasks in enumerate(ind):
+            row[f'robot_{i+1}'] = str(robot_tasks)
+        data.append(row)
+    df = pd.DataFrame(data)
+    csv_path = f"results/final_population_{time.strftime('%Y%m%d_%H%M%S')}.csv"
+    df.to_csv(csv_path, index=False)
+    print(f"Final population saved to {csv_path}")
+    
     
 
     # print("\nFinal Pareto Front (Objective Space):")
