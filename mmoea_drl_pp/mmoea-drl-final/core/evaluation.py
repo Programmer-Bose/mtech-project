@@ -1,25 +1,5 @@
-from drl.planner_interface import evaluate_drl
-
-# def evaluate_individual(individual, drl_planner):
-#     """
-#     Args:
-#         individual: list of task sequences (one per robot)
-#         drl_planner: function(robot_id, task_seq) -> path_length
-
-#     Returns:
-#         f1 = total path length (sum of all robot paths)
-#         f2 = max path length (time taken to complete all tasks)
-#     """
-#     path_lengths = []
-
-#     for robot_id, task_seq in enumerate(individual):
-#         length = drl_planner(robot_id, task_seq)
-#         path_lengths.append(length)
-
-#     f1 = sum(path_lengths)
-#     f2 = max(path_lengths)
-#     return f1, f2
-
+# from drl.planner_interface import evaluate_drl
+import random
 
 def evaluate_individual(individual, drl_planner):
     total_path_length = 0.0
@@ -32,7 +12,7 @@ def evaluate_individual(individual, drl_planner):
         max_robot_time = max(max_robot_time, path_length)
         updated_individual.append(reordered_seq)
 
-    # Replace individual's sequence with reordered one
+    # Replace individual's sequence with reordered one**
     individual[:] = updated_individual
 
     return total_path_length, max_robot_time
@@ -41,7 +21,7 @@ def evaluate_individual(individual, drl_planner):
 
 # def fake_drl_planner(robot_id, task_seq):
 #     # Dummy logic: each task adds 10 units of path
-#     return len(task_seq) * 10
+#     return len(task_seq) * 10, random.shuffle(task_seq)
 
 # if __name__ == "__main__":
 #     from encoding import generate_individual

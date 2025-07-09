@@ -311,6 +311,14 @@ def evaluate_drl(robot_id, task_seq):
     tour_indices, _, reward = infer_tour_single_instance(ACTOR_MODEL, coords_tensor)
     path_length = -reward
 
+    # Add distance from last task to robot depot to the path length
+    if len(tour_indices) > 1:
+        last_task_idx = tour_indices[-1]
+        last_task_coord = coords_np[last_task_idx]
+        depot_coord_np = np.array(depot_coord, dtype=np.float32)
+        extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
+        path_length += extra_distance
+
     # Convert DRL tour indices back to task IDs
     # tour_indices[0] is depot (0), so ignore it
     optimized_sequence = [task_seq[i - 1] for i in tour_indices if i != 0]
@@ -354,6 +362,16 @@ def evaluate_drl_lns(robot_id, task_seq):
         initial_temp,
         cooling
     )
+
+    # Add distance from last task to robot depot to the path length
+    if len(refined_tour_indices) > 1:
+        last_task_idx = refined_tour_indices[-1]
+        last_task_coord = coords_np[last_task_idx]
+        depot_coord_np = np.array(depot_coord, dtype=np.float32)
+        extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
+        refined_cost += extra_distance
+
+
     optimized_sequence = [task_seq[i - 1] for i in refined_tour_indices if i != 0]
     
     return refined_cost, optimized_sequence
@@ -362,13 +380,10 @@ def evaluate_drl_lns(robot_id, task_seq):
 TASK_COORDINATES = {}
 
 ROBOT_DEPOTS = {
-    0: (0.05, 0.05),   # Robot 0's base
-    1: (0.05, 0.95),   # Robot 1's base
-    2: (0.95, 0.5),   # Robot 2's base
-    3: (0.95, 0.95),   # Robot 3's base
-    4: (0.5, 0.05),   # Robot 4's base
-    5: (0.5, 0.95),   # Robot 5's base
-
+    0: (0.5, 0.05),   # Robot 0's base
+    1: (0.5, 0.05),   # Robot 1's base
+    2: (0.5, 0.95),   # Robot 2's base
+    3: (0.5, 0.95),   # Robot 3's base
 }
 
 
@@ -380,16 +395,35 @@ def generate_task_coordinates(num_tasks):
     Updates global TASK_COORDINATES.
     """
     global TASK_COORDINATES
-    TASK_COORDINATES = {}
+    TASK_COORDINATES = {0: (0.69705, 0.65912), 1: (0.72966, 0.74986), 2: (0.1696, 0.0068), 
+                        3: (0.84208, 0.32632), 4: (0.83636, 0.36766), 5: (0.89403, 0.81913), 
+                        6: (0.10039, 0.20462), 7: (0.54908, 0.06478), 8: (0.13489, 0.9508), 
+                        9: (0.06335, 0.23856), 10: (0.79052, 0.4825), 11: (0.37287, 0.58046), 
+                        12: (0.78679, 0.00468), 13: (0.85591, 0.9104), 14: (0.03169, 0.23075), 
+                        15: (0.16304, 0.64752), 16: (0.56675, 0.21116), 17: (0.09113, 0.81652), 
+                        18: (0.52155, 0.74205), 19: (0.39718, 0.93534), 20: (0.12136, 0.68844), 
+                        21: (0.60087, 0.20341), 22: (0.85873, 0.20238), 23: (0.56802, 0.30087), 
+                        24: (0.34087, 0.24421), 25: (0.69079, 0.22627), 26: (0.77693, 0.21814), 
+                        27: (0.23676, 0.75051), 28: (0.57872, 0.44212), 29: (0.8314, 0.28604)}
 
     # Fixed position for robot station
     # TASK_COORDINATES[0] = (0.5, 0.5)  # center of unit square
 
+    # Create 30 static coordinates for tasks 0 to 29
+    
+    # for tid in range(min(num_tasks, 30)):
+    #     TASK_COORDINATES[tid] = static_coords[tid]
+    # if num_tasks > 30:
+    #     for tid in range(30, num_tasks):
+    #         x = round(random.uniform(0, 1), 5)
+    #         y = round(random.uniform(0, 1), 5)
+    #         TASK_COORDINATES[tid] = (x, y)
+
     # Random positions for other tasks
-    for tid in range(0, num_tasks):
-        x = round(random.uniform(0, 1), 5)
-        y = round(random.uniform(0, 1), 5)
-        TASK_COORDINATES[tid] = (x, y)
+    # for tid in range(0, num_tasks):
+    #     x = round(random.uniform(0, 1), 5)
+    #     y = round(random.uniform(0, 1), 5)
+    #     TASK_COORDINATES[tid] = (x, y)
     #print the TASK_COORDINATES
     print(f"Generated TASK_COORDINATES: {TASK_COORDINATES}")
 

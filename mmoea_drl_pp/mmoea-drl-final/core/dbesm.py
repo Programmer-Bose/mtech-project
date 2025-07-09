@@ -9,7 +9,7 @@ def euclidean_distance(a, b):
     b = b + [0] * (max_len - len(b))
     return np.linalg.norm(np.array(a) - np.array(b))
 
-def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
+def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.3):
     current_rank = front_ranks[index]
     current_vector = flattened_pop[index]
 
@@ -53,7 +53,7 @@ def generate_offspring(parent, exemplar, mutation_prob=0.5):
 
     # Mutation: randomly swap some tasks
     if random.random() < mutation_prob:
-        for _ in range(3):
+        for _ in range(8): #need a hyperparameter
             i, j = random.sample(range(len(new_seq)), 2)
             new_seq[i], new_seq[j] = new_seq[j], new_seq[i]
 
@@ -69,7 +69,6 @@ def generate_offspring(parent, exemplar, mutation_prob=0.5):
         idx += s
 
     return robot_seq
-
 
 
 def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
@@ -95,7 +94,7 @@ def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
 #     from nsga2 import assign_fronts
 
 #     pop_size = 10
-#     num_tasks = 9
+#     num_tasks = 10
 #     num_robots = 3
 #     num_clusters = 3
 

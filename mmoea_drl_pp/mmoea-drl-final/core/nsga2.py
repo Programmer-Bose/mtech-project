@@ -21,6 +21,9 @@ def assign_fronts(objective_values):
             fronts[i] = 0
             current_front.append(i)
 
+    # print(dominated_sets)
+    # print(domination_counts)
+
     front = 0
     while current_front:
         next_front = []
@@ -34,3 +37,18 @@ def assign_fronts(objective_values):
         current_front = next_front
 
     return fronts
+
+# if __name__ == "__main__":
+#     # Example objective values for 5 individuals (minimization)
+#     objective_values = [
+#         [10, 2],
+#         [20, 1],
+#         [5,0.5],
+#         [1,0.2]
+#     ]
+#     fronts = assign_fronts(objective_values)
+#     print("Objective values:")
+#     for i, obj in enumerate(objective_values):
+#         print(f"Individual {i}: {obj}")
+#     print("\nAssigned fronts:", fronts)
+

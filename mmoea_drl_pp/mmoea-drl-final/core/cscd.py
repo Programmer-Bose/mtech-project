@@ -111,7 +111,7 @@ def compute_cscd_scores(flattened_population, objective_values, cluster_labels, 
 # if __name__ == "__main__":
 #     from encoding import generate_individual, flatten_individual
 
-#     pop_size = 20
+#     pop_size = 10
 #     num_tasks = 20
 #     num_robots = 6
 

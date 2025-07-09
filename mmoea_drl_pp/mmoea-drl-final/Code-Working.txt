@@ -1,0 +1,31 @@
+encoding.py
+    - generate_individual
+        -Input: num_tasks, num_robots | (6,20)
+        -Output: individual | [[6, 0, 18, 3], [4, 2, 8, 17], [1, 12, 19], [15, 11, 7], [5, 10, 13], [9, 14, 16]]
+    - flatten_individual
+        -Input: individual | [[6, 0, 18, 3], [4, 2, 8, 17], [1, 12, 19], [15, 11, 7], [5, 10, 13], [9, 14, 16]]
+        -Output: flat | [6, 0, 18, 3, -1, 4, 2, 8, 17, -1, 1, 12, 19, -1, 15, 11, 7, -1, 5, 10, 13, -1, 9, 14, 16]
+    - unflatten_individual
+        -Input: flat | [6, 0, 18, 3, -1, 4, 2, 8, 17, -1, 1, 12, 19, -1, 15, 11, 7, -1, 5, 10, 13, -1, 9, 14, 16]
+        -Output: restored | [[6, 0, 18, 3], [4, 2, 8, 17], [1, 12, 19], [15, 11, 7], [5, 10, 13], [9, 14, 16]]
+    - remove_duplicates
+        -Input: Population: [[[3, 13, 16, 2], [7, 4, 6, 11], [18, 10, 12], [17, 14, 5], [15, 1, 19], [8, 9, 0]],
+                            [[7, 17, 11, 12], [4, 1, 10, 2], [5, 14, 8], [18, 9, 19], [15, 13, 3], [0, 16, 6]]]
+        -Output: Unique Population: [[[3, 13, 16, 2], [7, 4, 6, 11], [18, 10, 12], [17, 14, 5], [15, 1, 19], [8, 9, 0]], 
+                                    [[7, 17, 11, 12], [4, 1, 10, 2], [5, 14, 8], [18, 9, 19], [15, 13, 3], [0, 16, 6]]]
+
+----------------------------
+
+evaluation.py
+
+    - evaluate_individual
+        - Input: individual, drl_planner | [[6, 0, 18, 3], [4, 2, 8, 17], [1, 12, 19], [15, 11, 7], [5, 10, 13], [9, 14, 16]]
+        - Output: total_path_length, max_robot_time | Total Path Length (f1): 200.0,Time Taken (f2): 40
+
+----------------------------
+
+clustering.py
+    - cluster_population
+        - Input: (flattened_population, num_clusters) 
+        - Output: Labels
+

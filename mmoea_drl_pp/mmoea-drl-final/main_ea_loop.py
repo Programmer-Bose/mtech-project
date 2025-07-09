@@ -11,12 +11,36 @@ from utils.visualize import plot_best_solution
 import random
 from tqdm import tqdm
 import pandas as pd
+import ast
+import os
 
 
 sP = 1  # Scale factor for DBESM offspring generation
 
-def initialize_population(pop_size, num_tasks, num_robots):
-    return [generate_individual(num_tasks, num_robots) for _ in range(pop_size)]
+# def initialize_population(pop_size, num_tasks, num_robots):
+#     return [generate_individual(num_tasks, num_robots) for _ in range(pop_size)]
+
+
+
+def initialize_population(pop_size, num_tasks, num_robots, resume_file=None):
+    if resume_file and os.path.isfile(resume_file):
+        print(f"🔄 Resuming from saved population: {resume_file}")
+        df = pd.read_csv(resume_file)
+
+        population = []
+        for _, row in df.iterrows():
+            individual = []
+            for i in range(num_robots):
+                robot_col = f"robot_{i+1}"
+                task_list = ast.literal_eval(row[robot_col])
+                individual.append(task_list)
+            population.append(individual)
+
+        return population
+    else:
+        print("🆕 Generating fresh random population")
+        return [generate_individual(num_tasks, num_robots) for _ in range(pop_size)]
+
 
 def evaluate_population(population, drl_planner):
     return [evaluate_individual(ind, drl_planner) for ind in population]
@@ -45,10 +69,10 @@ def run_evolution(
     
 
     # Step 1: Initialize
-    population = initialize_population(pop_size, num_tasks, num_robots)
-    # print(population[0])  # Print first individual for debugging
+    population = initialize_population(pop_size, num_tasks, num_robots, resume_file="results/final_population_100_200_20250709_131838.csv")
+    
 
-    for gen in tqdm(range(generations), desc="Evolution Progress"):
+    for gen in range(generations):
         # print(f"\n--- Generation {gen} ---")
 
         # Step 2: Flatten
@@ -101,9 +125,9 @@ def run_evolution(
         )
 
         # Optional: Print best
-        # best = min(objective_values, key=lambda x: (x[0], x[1]))
+        best = min(objective_values, key=lambda x: (x[0], x[1]))
         # tqdm.write(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
-        # print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
+        print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
 
 
     
@@ -112,11 +136,11 @@ def run_evolution(
 
 if __name__ == "__main__":
     #Hyperparameters
-    NUM_TASKS = 20
-    NUM_ROBOTS = 3
-    POP_SIZE = 100
-    GENERATIONS = 50
-    NUM_CLUSTERS = 4
+    NUM_TASKS = 30
+    NUM_ROBOTS = 4
+    POP_SIZE = 200
+    GENERATIONS = 100
+    NUM_CLUSTERS = 6
 
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)
@@ -134,7 +158,7 @@ if __name__ == "__main__":
     )
 
     # best_idx = final_objs.index(min(final_objs, key=lambda x: (x[0], x[1])))
-    best_idx = final_objs.index(min(final_objs, key=lambda x: (x[1], x[0])))
+    best_idx = final_objs.index(min(final_objs, key=lambda x: (x[0], x[1])))
     best_solution = final_pop[best_idx]
     print(f"\nBest Solution (f1, f2): {final_objs[best_idx]} at index {best_idx}")
     print(f"Best Solution (Decision Space): {best_solution}")
@@ -157,7 +181,7 @@ if __name__ == "__main__":
             row[f'robot_{i+1}'] = str(robot_tasks)
         data.append(row)
     df = pd.DataFrame(data)
-    csv_path = f"results/final_population_{time.strftime('%Y%m%d_%H%M%S')}.csv"
+    csv_path = f"results/final_population_{GENERATIONS}_{POP_SIZE}_{time.strftime('%Y%m%d_%H%M%S')}.csv"
     df.to_csv(csv_path, index=False)
     print(f"Final population saved to {csv_path}")
     

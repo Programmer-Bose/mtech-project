@@ -3,32 +3,11 @@ import numpy as np
 from random import shuffle
 # from drl.planner_interface import TASK_COORDINATES
 
+
 def generate_individual(num_tasks, num_robots):
-    tasks = list(range(num_tasks))
-    random.shuffle(tasks)
-
-    # Evenly distribute tasks (some robots may have 1 more/less)
-    splits = np.array_split(tasks, num_robots)
-    return [list(s) for s in splits]
-
-    # tasks = list(range(num_tasks))
-    # random.shuffle(tasks)
-
-    # # Generate random split sizes that sum to num_tasks
-    # split_sizes = [0] * num_robots
-    # for _ in range(num_tasks):
-    #     split_sizes[random.randint(0, num_robots - 1)] += 1
-
-    # # Distribute tasks accordingly
-    # individual = []
-    # index = 0
-    # for size in split_sizes:
-    #     individual.append(tasks[index:index+size])
-    #     index += size
-    # # Ensure all tasks are assigned
-    # assert sum(split_sizes) == num_tasks, "Not all tasks assigned!"
-    # # print(individual)
-    # return individual
+    tasks = np.random.permutation(num_tasks)  # random permutation of task indices
+    splits = np.array_split(tasks, num_robots)  # split roughly evenly
+    return [list(s) for s in splits]  # convert arrays to lists  
 
 def flatten_individual(individual):
     """Flatten robot-wise task list with -1 as separator"""
@@ -53,7 +32,6 @@ def remove_duplicates(population, objectives=None):
     if objectives:
         return unique_pop, unique_objs
     return unique_pop
-
 
 def unflatten_individual(flattened):
     """Convert flattened form back to list-of-lists"""
@@ -82,6 +60,17 @@ def unflatten_individual(flattened):
 
 #     restored = unflatten_individual(flat)
 #     print("Restored:", restored)
+
+#     population = [generate_individual(num_tasks, num_robots) for _ in range(2)]
+#     print("Population:", population)
+
+#     unique_population = remove_duplicates(population)
+#     print("Unique Population:", unique_population)
+
+#     if (len(population) == len(unique_population)):
+#         print("No Duplicates!!")
+
+    
 
 #     assert sorted([t for r in individual for t in r]) == list(range(num_tasks)), "Missing tasks"
 #     assert individual == restored, "Unflatten failed!"
