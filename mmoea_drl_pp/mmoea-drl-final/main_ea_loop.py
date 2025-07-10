@@ -69,7 +69,7 @@ def run_evolution(
     
 
     # Step 1: Initialize
-    population = initialize_population(pop_size, num_tasks, num_robots, resume_file="results/final_population_100_200_20250709_131838.csv")
+    population = initialize_population(pop_size, num_tasks, num_robots, resume_file=None)
     
 
     for gen in range(generations):
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     NUM_TASKS = 30
     NUM_ROBOTS = 4
     POP_SIZE = 200
-    GENERATIONS = 100
+    GENERATIONS = 200
     NUM_CLUSTERS = 6
 
     # Generate new task coordinates each run
