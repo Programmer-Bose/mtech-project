@@ -105,6 +105,44 @@ def infer_tour_single_instance(actor_model, input_coords):
 
     return inferred_tour_indices, inferred_tour_coords_np, tour_reward
 
+def infer_tour_batch(actor_model, batch_coords):
+    """
+    Infers tours for a batch of input coordinate sets using the loaded Actor model.
+
+    Args:
+        actor_model (Actor): The loaded Actor model in evaluation mode.
+        batch_coords (torch.Tensor): Tensor of input coordinates for a batch.
+                                        Shape: (batch_size, seq_len, 2)
+
+    Returns:
+        tuple:
+            - inferred_tour_indices_list (list of lists): Each sublist is the sequence of visited node indices.
+            - inferred_tour_coords_list (list of np.ndarray): Each array is (seq_len, 2) of inferred tour coordinates.
+            - tour_lengths (list of float): Tour lengths for each instance in the batch.
+    """
+    device = next(actor_model.parameters()).device
+    batch_coords = batch_coords.to(device)
+    batch_size, seq_len, _ = batch_coords.shape
+
+    with torch.no_grad():
+        predicted_tours_batched, _ = actor_model(batch_coords, seq_len)  # (B, seq_len)
+        inferred_tour_indices_list = []
+        inferred_tour_coords_list = []
+        tour_lengths = []
+
+        for i in range(batch_size):
+            predicted_tour = predicted_tours_batched[i].cpu().numpy().tolist()
+            coords_np = batch_coords[i].cpu().numpy()
+            inferred_coords = coords_np[predicted_tour]
+            path_coords = np.vstack([inferred_coords, inferred_coords[0]])
+            distances = np.linalg.norm(path_coords[1:] - path_coords[:-1], axis=1)
+            tour_length = distances.sum()
+
+            inferred_tour_indices_list.append(predicted_tour)
+            inferred_tour_coords_list.append(inferred_coords)
+            tour_lengths.append(tour_length)
+
+    return inferred_tour_indices_list, inferred_tour_coords_list, tour_lengths
 
 # ----- LNS Helper Functions -----
 
@@ -312,12 +350,12 @@ def evaluate_drl(robot_id, task_seq):
     path_length = -reward
 
     # Add distance from last task to robot depot to the path length
-    if len(tour_indices) > 1:
-        last_task_idx = tour_indices[-1]
-        last_task_coord = coords_np[last_task_idx]
-        depot_coord_np = np.array(depot_coord, dtype=np.float32)
-        extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
-        path_length += extra_distance
+    # if len(tour_indices) > 1:
+        # last_task_idx = tour_indices[-1]
+        # last_task_coord = coords_np[last_task_idx]
+        # depot_coord_np = np.array(depot_coord, dtype=np.float32)
+        # extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
+        # path_length += extra_distance
 
     # Convert DRL tour indices back to task IDs
     # tour_indices[0] is depot (0), so ignore it
@@ -364,17 +402,18 @@ def evaluate_drl_lns(robot_id, task_seq):
     )
 
     # Add distance from last task to robot depot to the path length
-    if len(refined_tour_indices) > 1:
-        last_task_idx = refined_tour_indices[-1]
-        last_task_coord = coords_np[last_task_idx]
-        depot_coord_np = np.array(depot_coord, dtype=np.float32)
-        extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
-        refined_cost += extra_distance
+    # if len(refined_tour_indices) > 1:
+    #     last_task_idx = refined_tour_indices[-1]
+    #     last_task_coord = coords_np[last_task_idx]
+    #     depot_coord_np = np.array(depot_coord, dtype=np.float32)
+    #     extra_distance = np.linalg.norm(last_task_coord - depot_coord_np)
+    #     refined_cost += extra_distance
 
 
     optimized_sequence = [task_seq[i - 1] for i in refined_tour_indices if i != 0]
     
     return refined_cost, optimized_sequence
+
 
 
 TASK_COORDINATES = {}
@@ -384,6 +423,8 @@ ROBOT_DEPOTS = {
     1: (0.5, 0.05),   # Robot 1's base
     2: (0.5, 0.95),   # Robot 2's base
     3: (0.5, 0.95),   # Robot 3's base
+    4: (0.05, 0.5),   # Robot 2's base
+    5: (0.05, 0.5),   # Robot 3's base
 }
 
 
@@ -395,36 +436,37 @@ def generate_task_coordinates(num_tasks):
     Updates global TASK_COORDINATES.
     """
     global TASK_COORDINATES
-    TASK_COORDINATES = {0: (0.69705, 0.65912), 1: (0.72966, 0.74986), 2: (0.1696, 0.0068), 
-                        3: (0.84208, 0.32632), 4: (0.83636, 0.36766), 5: (0.89403, 0.81913), 
-                        6: (0.10039, 0.20462), 7: (0.54908, 0.06478), 8: (0.13489, 0.9508), 
-                        9: (0.06335, 0.23856), 10: (0.79052, 0.4825), 11: (0.37287, 0.58046), 
-                        12: (0.78679, 0.00468), 13: (0.85591, 0.9104), 14: (0.03169, 0.23075), 
-                        15: (0.16304, 0.64752), 16: (0.56675, 0.21116), 17: (0.09113, 0.81652), 
-                        18: (0.52155, 0.74205), 19: (0.39718, 0.93534), 20: (0.12136, 0.68844), 
-                        21: (0.60087, 0.20341), 22: (0.85873, 0.20238), 23: (0.56802, 0.30087), 
-                        24: (0.34087, 0.24421), 25: (0.69079, 0.22627), 26: (0.77693, 0.21814), 
-                        27: (0.23676, 0.75051), 28: (0.57872, 0.44212), 29: (0.8314, 0.28604)}
-
-    # Fixed position for robot station
-    # TASK_COORDINATES[0] = (0.5, 0.5)  # center of unit square
-
-    # Create 30 static coordinates for tasks 0 to 29
-    
-    # for tid in range(min(num_tasks, 30)):
-    #     TASK_COORDINATES[tid] = static_coords[tid]
-    # if num_tasks > 30:
-    #     for tid in range(30, num_tasks):
-    #         x = round(random.uniform(0, 1), 5)
-    #         y = round(random.uniform(0, 1), 5)
-    #         TASK_COORDINATES[tid] = (x, y)
-
-    # Random positions for other tasks
-    # for tid in range(0, num_tasks):
-    #     x = round(random.uniform(0, 1), 5)
-    #     y = round(random.uniform(0, 1), 5)
-    #     TASK_COORDINATES[tid] = (x, y)
-    #print the TASK_COORDINATES
+    if num_tasks == 30:
+        TASK_COORDINATES = {0: (0.69705, 0.65912), 1: (0.72966, 0.74986), 2: (0.1696, 0.0068), 
+                            3: (0.84208, 0.32632), 4: (0.83636, 0.36766), 5: (0.89403, 0.81913), 
+                            6: (0.10039, 0.20462), 7: (0.54908, 0.06478), 8: (0.13489, 0.9508), 
+                            9: (0.06335, 0.23856), 10: (0.79052, 0.4825), 11: (0.37287, 0.58046), 
+                            12: (0.78679, 0.00468), 13: (0.85591, 0.9104), 14: (0.03169, 0.23075), 
+                            15: (0.16304, 0.64752), 16: (0.56675, 0.21116), 17: (0.09113, 0.81652), 
+                            18: (0.52155, 0.74205), 19: (0.39718, 0.93534), 20: (0.12136, 0.68844), 
+                            21: (0.60087, 0.20341), 22: (0.85873, 0.20238), 23: (0.56802, 0.30087), 
+                            24: (0.34087, 0.24421), 25: (0.69079, 0.22627), 26: (0.77693, 0.21814), 
+                            27: (0.23676, 0.75051), 28: (0.57872, 0.44212), 29: (0.8314, 0.28604)}
+    elif num_tasks == 40:
+        TASK_COORDINATES = {0: (0.28622, 0.05656), 1: (0.72577, 0.35559), 2: (0.71636, 0.50594), 3: (0.55564, 0.13739), 4: (0.00603, 0.61574), 
+                            5: (0.56315, 0.18749), 6: (0.66332, 0.3703), 7: (0.21929, 0.23674), 8: (0.55631, 0.95716), 9: (0.78265, 0.8054), 
+                            10: (0.72049, 0.08855), 11: (0.71608, 0.69803), 12: (0.45737, 0.5548), 13: (0.91572, 0.59762), 14: (0.01751, 0.65288), 
+                            15: (0.07649, 0.42422), 16: (0.17067, 0.47288), 17: (0.02204, 0.80086), 18: (0.18427, 0.15977), 19: (0.11608, 0.36249), 
+                            20: (0.64523, 0.93359), 21: (0.06693, 0.72292), 22: (0.70244, 0.70216), 23: (0.90778, 0.17913), 24: (0.04519, 0.67917), 
+                            25: (0.09136, 0.14897), 26: (0.55026, 0.48733), 27: (0.60853, 0.23141), 28: (0.46426, 0.69563), 29: (0.99101, 0.05494), 
+                            30: (0.18471, 0.96555), 31: (0.41737, 0.17116), 32: (0.3363, 0.64772), 33: (0.76816, 0.12956), 34: (0.73206, 0.89114), 
+                            35: (0.06908, 0.3784), 36: (0.78401, 0.47397), 37: (0.80574, 0.03623), 38: (0.12299, 0.43387), 39: (0.67929, 0.61887)}
+    elif num_tasks == 50:
+        TASK_COORDINATES = {0: (0.39534, 0.68756), 1: (0.4424, 0.60378), 2: (0.20967, 0.29293), 3: (0.03024, 0.01028), 4: (0.76231, 0.06503), 
+                            5: (0.4733, 0.53059), 6: (0.68235, 0.17453), 7: (0.90423, 0.36469), 8: (0.80707, 0.02214), 9: (0.00513, 0.58839), 
+                            10: (0.59005, 0.45084), 11: (0.64651, 0.69564), 12: (0.80693, 0.04008), 13: (0.46085, 0.3875), 14: (0.43236, 0.71253), 
+                            15: (0.77861, 0.06421), 16: (0.35728, 0.28466), 17: (0.77865, 0.99453), 18: (0.58099, 0.88816), 19: (0.85589, 0.43875), 
+                            20: (0.25906, 0.69002), 21: (0.23123, 0.99426), 22: (0.04942, 0.44741), 23: (0.78031, 0.81734), 24: (0.97362, 0.14262), 
+                            25: (0.73617, 0.86862), 26: (0.66363, 0.29071), 27: (0.04696, 0.4755), 28: (0.10449, 0.33187), 29: (0.79317, 0.98257), 
+                            30: (0.56858, 0.46599), 31: (0.57042, 0.99747), 32: (0.52551, 0.1575), 33: (0.85998, 0.37287), 34: (0.79473, 0.23393), 
+                            35: (0.96237, 0.29968), 36: (0.94451, 0.56889), 37: (0.68185, 0.14454), 38: (0.67245, 0.48153), 39: (0.38454, 0.74664), 
+                            40: (0.10245, 0.08172), 41: (0.44812, 0.37467), 42: (0.57389, 0.088), 43: (0.00088, 0.79179), 44: (0.89126, 0.10573), 
+                            45: (0.14148, 0.27892), 46: (0.76024, 0.51157), 47: (0.61734, 0.4529), 48: (0.17526, 0.17778), 49: (0.33901, 0.57512)}
     print(f"Generated TASK_COORDINATES: {TASK_COORDINATES}")
 
 

@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from drl import planner_interface  # Import the module, not just variables
 
+
+
 def plot_best_solution(individual, title="Best Solution", save_path=None):
     """
     Plots the task paths for each robot in a multi-depot system.
@@ -53,51 +55,31 @@ def plot_best_solution(individual, title="Best Solution", save_path=None):
     else:
         plt.show()
 
+def plot_pareto_gen(best_in_gen, title="Pareto Front Over Generations", save_path=None):
+    """
+    Plots the Pareto front over generations.
+    
+    Args:
+        best_in_gen: List of tuples (f1, f2) representing the best solutions in each generation
+        title: Title of the plot
+        save_path: Path to save the image. If None, shows the plot interactively.
+    """
+    plt.figure(figsize=(8, 6))
+    f1 = [x[0] for x in best_in_gen]
+    f2 = [x[1] for x in best_in_gen]
 
-# import matplotlib.pyplot as plt
-# import numpy as np
-# from drl.planner_interface import TASK_COORDINATES
+    # plot a scatter plot and mark with generation number
+    plt.scatter(f1, f2, c='red', s=50, label='Best Solutions')
+    for i, (x, y) in enumerate(zip(f1, f2)):
+        plt.text(x, y, str(i+1), fontsize=8, ha='right', va='bottom')
 
-# def plot_best_solution(individual, title="Best Solution", save_path=None):
-#     """
-#     Args:
-#         individual: List[List[int]] – task sequences for each robot
-#         title: Title of the plot
-#         save_path: If provided, saves the image to file
-#     """
-#     plt.figure(figsize=(8, 6))
-#     colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'cyan', 'magenta']
-#     depot = TASK_COORDINATES[0]
+    plt.title(title)
+    plt.xlabel("Objective 1 (f1)")
+    plt.ylabel("Objective 2 (f2)")
+    plt.grid(True)
 
-#     # Plot all tasks
-#     for tid, (x, y) in TASK_COORDINATES.items():
-#         plt.scatter(x, y, c='black', s=40)
-#         plt.text(x + 0.01, y + 0.01, f'{tid}', fontsize=9)
-
-#     # Plot depot
-#     plt.scatter(*depot, c='black', s=100, marker='s', label='Depot (0)')
-
-#     # Plot each robot path
-#     for r, task_seq in enumerate(individual):
-#         color = colors[r % len(colors)]
-#         path = [0] + task_seq + [0]  # start and end at depot
-#         coords = [TASK_COORDINATES[t] for t in path]
-
-#         xs, ys = zip(*coords)
-#         plt.plot(xs, ys, color=color, linewidth=2, label=f'Robot {r+1}')
-#         plt.scatter(xs[1:-1], ys[1:-1], c=color, s=60)
-
-#         # Mark start and end
-#         plt.scatter(xs[0], ys[0], c=color, marker='>', s=100)
-#         plt.scatter(xs[-1], ys[-1], c=color, marker='X', s=100)
-
-#     plt.title(title)
-#     plt.xlabel("X")
-#     plt.ylabel("Y")
-#     plt.grid(True)
-#     plt.legend()
-#     if save_path:
-#         plt.savefig(save_path)
-#         print(f"Saved best solution plot to {save_path}")
-#     else:
-#         plt.show()
+    if save_path:
+        plt.savefig(save_path)
+        print(f"Saved Pareto front plot to: {save_path}")
+    else:
+        plt.show()

@@ -6,7 +6,17 @@ from random import shuffle
 
 def generate_individual(num_tasks, num_robots):
     tasks = np.random.permutation(num_tasks)  # random permutation of task indices
-    splits = np.array_split(tasks, num_robots)  # split roughly evenly
+    # splits = np.array_split(tasks, num_robots)  # split roughly evenly
+    # Split tasks unevenly among robots
+    splits = []
+    remaining = list(tasks)
+    for i in range(num_robots - 1):
+        # Ensure at least 1 task per robot, randomize split size
+        max_split = len(remaining) - (num_robots - i - 1)
+        split_size = random.randint(1, max_split)
+        splits.append(remaining[:split_size])
+        remaining = remaining[split_size:]
+    splits.append(remaining)
     return [list(s) for s in splits]  # convert arrays to lists  
 
 def flatten_individual(individual):
@@ -50,7 +60,7 @@ def unflatten_individual(flattened):
 
 # if __name__ == "__main__":
 #     num_tasks = 20
-#     num_robots = 6
+#     num_robots = 3
 
 #     individual = generate_individual(num_tasks, num_robots)
 #     print("Generated Individual:", individual)

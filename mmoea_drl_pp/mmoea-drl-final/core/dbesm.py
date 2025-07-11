@@ -9,7 +9,7 @@ def euclidean_distance(a, b):
     b = b + [0] * (max_len - len(b))
     return np.linalg.norm(np.array(a) - np.array(b))
 
-def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.3):
+def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
     current_rank = front_ranks[index]
     current_vector = flattened_pop[index]
 
@@ -32,8 +32,7 @@ def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.3):
     exemplar_idx = elites[np.argmin(distances)]
     return exemplar_idx
 
-
-# def generate_offspring(parent, exemplar, mutation_prob=0.5):
+def mutate_offspring(parent, exemplar, mutation_prob=0.5):
     """
     Args:
         parent, exemplar: both are list-of-lists task sequences (robot-wise)
@@ -41,35 +40,34 @@ def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.3):
     Returns:
         new_individual: mutated child
     """
-    # num_robots = len(parent)
-    # tasks = set(t for r in parent for t in r)
+    num_robots = len(parent)
+    tasks = set(t for r in parent for t in r)
     
-    # # Flatten exemplar & parent
-    # ex_flat = [t for r in exemplar for t in r]
-    # ex_flat = [t for t in ex_flat if t in tasks]  # ensure same task set
+    # Flatten exemplar & parent
+    ex_flat = [t for r in exemplar for t in r]
+    ex_flat = [t for t in ex_flat if t in tasks]  # ensure same task set
 
-    # # Crossover: start from exemplar
-    # new_seq = ex_flat.copy()
+    # Crossover: start from exemplar
+    new_seq = ex_flat.copy()
 
-    # # Mutation: randomly swap some tasks
-    # if random.random() < mutation_prob:
-    #     for _ in range(8): #need a hyperparameter
-    #         i, j = random.sample(range(len(new_seq)), 2)
-    #         new_seq[i], new_seq[j] = new_seq[j], new_seq[i]
+    # Mutation: randomly swap some tasks
+    if random.random() < mutation_prob:
+        for _ in range(15): #need a hyperparameter
+            i, j = random.sample(range(len(new_seq)), 2)
+            new_seq[i], new_seq[j] = new_seq[j], new_seq[i]
 
-    # # Redistribute to robots (uneven split)
-    # splits = [0] * num_robots
-    # for _ in new_seq:
-    #     splits[random.randint(0, num_robots - 1)] += 1
+    # Redistribute to robots (uneven split)
+    splits = [0] * num_robots
+    for _ in new_seq:
+        splits[random.randint(0, num_robots - 1)] += 1
 
-    # robot_seq = []
-    # idx = 0
-    # for s in splits:
-    #     robot_seq.append(new_seq[idx:idx+s])
-    #     idx += s
+    robot_seq = []
+    idx = 0
+    for s in splits:
+        robot_seq.append(new_seq[idx:idx+s])
+        idx += s
 
-    # return robot_seq
-
+    return robot_seq
 
 def de_generate_offspring_allocation(x_i, x_r1, x_r2, x_r3, F=0.5, CR=0.7, num_robots=3):
     x_i = np.array(x_i)
@@ -82,7 +80,7 @@ def de_generate_offspring_allocation(x_i, x_r1, x_r2, x_r3, F=0.5, CR=0.7, num_r
     mutant = x_r1 + F * diff
 
     # Add small noise to reduce bias, then floor and clamp
-    mutant += np.random.uniform(-0.3, 0.3, size=mutant.shape)
+    mutant += np.random.uniform(-0.1, 0.1, size=mutant.shape)
     mutant = np.floor(mutant).astype(int)
     mutant = np.clip(mutant, 0, num_robots - 1)
 
@@ -108,7 +106,7 @@ def allocation_vector_to_robot_tasks(allocation_vector, num_robots):
 def flatten(individual):
     return [task for robot in individual for task in robot]
 
-def generate_offspring(parent, exemplar, mutation_prob=0.5, use_de=True, r1=None, r2=None, r3=None, F=0.5, CR=0.7):
+def generate_offspring(parent, use_de=True, r1=None, r2=None, r3=None, F=0.5):
     """
     Args:
         parent, exemplar: both are list-of-lists task sequences (robot-wise)
@@ -139,25 +137,6 @@ def generate_offspring(parent, exemplar, mutation_prob=0.5, use_de=True, r1=None
         allocation_vec = [min(max(int(rid), 0), num_robots - 1) for rid in allocation_vec]
         return allocation_vector_to_robot_tasks(allocation_vec, num_robots)
 
-    # Otherwise use original exemplar-based mutation
-    ex_flat = [t for r in exemplar for t in r if t in tasks]
-    new_seq = ex_flat.copy()
-
-    if random.random() < mutation_prob:
-        for _ in range(3):
-            i, j = random.sample(range(len(new_seq)), 2)
-            new_seq[i], new_seq[j] = new_seq[j], new_seq[i]
-
-    splits = [0] * num_robots
-    for _ in new_seq:
-        splits[random.randint(0, num_robots - 1)] += 1
-
-    robot_seq, idx = [], 0
-    for s in splits:
-        robot_seq.append(new_seq[idx:idx + s])
-        idx += s
-
-    return robot_seq
 
 def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
     """
@@ -170,8 +149,9 @@ def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
         exemplar = unflatten_individual(flattened_pop[exemplar_idx])
         # offspring = generate_offspring(population[i], exemplar)
         #choose r2 and r3 2 individuals from population randomly
-        r2_idx, r3_idx = random.sample([j for j in range(len(population)) if j != i], 2)
-        offspring = generate_offspring(population[i], exemplar, mutation_prob=0.5, use_de=True, r1=exemplar, r2=population[r2_idx], r3=population[r3_idx], F=0.7)
+        r1_idx, r2_idx, r3_idx = random.sample([j for j in range(len(population)) if j != i], 3)
+        offspring = generate_offspring(population[i], use_de=True, r1=population[r1_idx], r2=population[r2_idx], r3=population[r3_idx], F=0.5)
+        offspring = mutate_offspring(offspring, exemplar, mutation_prob=0.5)
         new_pop.append(offspring)
 
     return new_pop

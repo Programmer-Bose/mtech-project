@@ -18,7 +18,6 @@ def evaluate_individual(individual, drl_planner):
     return total_path_length, max_robot_time
 
 
-
 # def fake_drl_planner(robot_id, task_seq):
 #     # Dummy logic: each task adds 10 units of path
 #     return len(task_seq) * 10, random.shuffle(task_seq)
