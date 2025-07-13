@@ -9,7 +9,7 @@ def euclidean_distance(a, b):
     b = b + [0] * (max_len - len(b))
     return np.linalg.norm(np.array(a) - np.array(b))
 
-def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.5):
+def select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.2):
     current_rank = front_ranks[index]
     current_vector = flattened_pop[index]
 
@@ -69,6 +69,51 @@ def mutate_offspring(parent, exemplar, mutation_prob=0.5):
 
     return robot_seq
 
+def crossover_with_exemplar(parent, exemplar, num_robots,pR = 0.4):
+    """
+    Combine task sequence from parent and exemplar using position-based crossover.
+
+    Args:
+        parent: List[List[int]] – parent individual (robot-wise)
+        exemplar: List[List[int]] – exemplar individual (robot-wise)
+        num_robots: int
+
+    Returns:
+        new_individual: List[List[int]] – offspring
+    """
+    # Flatten both
+    parent_flat = [t for r in parent for t in r]
+    exemplar_flat = [t for r in exemplar for t in r]
+
+    assert set(parent_flat) == set(exemplar_flat), "Task sets must match"
+
+    # Step 1: Select random positions from exemplar to preserve
+    num_tasks = len(parent_flat)
+    num_preserve = int(pR * num_tasks)  # preserve 40% of exemplar order
+    preserve_tasks = set(random.sample(exemplar_flat, num_preserve))
+
+    # Step 2: Build offspring sequence
+    # Keep exemplar-preserved tasks in order
+    preserved = [t for t in exemplar_flat if t in preserve_tasks]
+    # Fill the rest from parent (excluding preserved ones), maintaining order
+    rest = [t for t in parent_flat if t not in preserve_tasks]
+
+    # Final sequence: preserved (ordered from exemplar), then rest (from parent)
+    offspring_seq = preserved + rest
+
+    # Step 3: Redistribute to robots (uneven)
+    splits = [0] * num_robots
+    for _ in offspring_seq:
+        splits[random.randint(0, num_robots - 1)] += 1
+
+    new_individual = []
+    idx = 0
+    for s in splits:
+        new_individual.append(offspring_seq[idx:idx+s])
+        idx += s
+
+    return new_individual
+
 def de_generate_offspring_allocation(x_i, x_r1, x_r2, x_r3, F=0.5, CR=0.7, num_robots=3):
     x_i = np.array(x_i)
     x_r1 = np.array(x_r1)
@@ -80,7 +125,7 @@ def de_generate_offspring_allocation(x_i, x_r1, x_r2, x_r3, F=0.5, CR=0.7, num_r
     mutant = x_r1 + F * diff
 
     # Add small noise to reduce bias, then floor and clamp
-    mutant += np.random.uniform(-0.1, 0.1, size=mutant.shape)
+    mutant += np.random.uniform(-0.4, 0.4, size=mutant.shape)
     mutant = np.floor(mutant).astype(int)
     mutant = np.clip(mutant, 0, num_robots - 1)
 
@@ -106,7 +151,7 @@ def allocation_vector_to_robot_tasks(allocation_vector, num_robots):
 def flatten(individual):
     return [task for robot in individual for task in robot]
 
-def generate_offspring(parent, use_de=True, r1=None, r2=None, r3=None, F=0.5):
+def generate_offspring(parent, use_de=True, r1=None, r2=None, r3=None, F=0.5,CR=0.7):
     """
     Args:
         parent, exemplar: both are list-of-lists task sequences (robot-wise)
@@ -138,7 +183,7 @@ def generate_offspring(parent, use_de=True, r1=None, r2=None, r3=None, F=0.5):
         return allocation_vector_to_robot_tasks(allocation_vec, num_robots)
 
 
-def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
+def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores,num_robots):
     """
     Returns: new population (offspring) using DBESM logic
     """
@@ -151,7 +196,8 @@ def dbesm_selection(population, flattened_pop, front_ranks, cscd_scores):
         #choose r2 and r3 2 individuals from population randomly
         r1_idx, r2_idx, r3_idx = random.sample([j for j in range(len(population)) if j != i], 3)
         offspring = generate_offspring(population[i], use_de=True, r1=population[r1_idx], r2=population[r2_idx], r3=population[r3_idx], F=0.5)
-        offspring = mutate_offspring(offspring, exemplar, mutation_prob=0.5)
+        # offspring = mutate_offspring(offspring, exemplar, mutation_prob=0.5)
+        # offspring = crossover_with_exemplar(offspring,exemplar,num_robots,pR=0.5)
         new_pop.append(offspring)
 
     return new_pop

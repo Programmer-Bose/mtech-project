@@ -5,18 +5,10 @@ from random import shuffle
 
 
 def generate_individual(num_tasks, num_robots):
-    tasks = np.random.permutation(num_tasks)  # random permutation of task indices
-    # splits = np.array_split(tasks, num_robots)  # split roughly evenly
-    # Split tasks unevenly among robots
-    splits = []
-    remaining = list(tasks)
-    for i in range(num_robots - 1):
-        # Ensure at least 1 task per robot, randomize split size
-        max_split = len(remaining) - (num_robots - i - 1)
-        split_size = random.randint(1, max_split)
-        splits.append(remaining[:split_size])
-        remaining = remaining[split_size:]
-    splits.append(remaining)
+    tasks = list(range(num_tasks))
+    random.shuffle(tasks)
+    # Evenly distribute tasks (some robots may have 1 more/less)
+    splits = np.array_split(tasks, num_robots)
     return [list(s) for s in splits]  # convert arrays to lists  
 
 def flatten_individual(individual):

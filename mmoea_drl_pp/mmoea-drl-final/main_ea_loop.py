@@ -13,13 +13,13 @@ from tqdm import tqdm
 import pandas as pd
 import ast
 import os
+import numpy as np
 
 
 
 
 # def initialize_population(pop_size, num_tasks, num_robots):
 #     return [generate_individual(num_tasks, num_robots) for _ in range(pop_size)]
-
 
 
 def initialize_population(pop_size, num_tasks, num_robots, resume_file=None):
@@ -66,10 +66,35 @@ def select_next_generation(pop, obj_vals, flat, fronts, cscd, N):
     Select top-N individuals based on front + CSCD
     """
     combined = list(zip(pop, obj_vals, flat, fronts, cscd))
+    threshold = 2.3
+    combined = [item for item in combined if abs(item[1][0] - item[1][1]) >= threshold]
     combined.sort(key=lambda x: (x[3], -x[4]))  # sort by front asc, CSCD desc
     selected = combined[:N]
     return [x[0] for x in selected], [x[1] for x in selected]
 
+def next_gen_de(parent, p_obj, offspring, off_obj):
+    combined_population = parent + offspring
+    combined_objectives = p_obj + off_obj
+
+    # Ensure objective values are scalar floats, not numpy arrays
+    def to_scalar(val):
+        if isinstance(val, np.ndarray):
+            return float(val.item()) if val.size == 1 else float(val[0])
+        return float(val)
+
+    cleaned_objectives = [(to_scalar(obj[0]), to_scalar(obj[1])) for obj in combined_objectives]
+
+    # Sort by f1, then f2
+    sorted_indices = sorted(range(len(combined_population)),
+                            key=lambda i: (cleaned_objectives[i][0], cleaned_objectives[i][1]))
+
+    N = len(parent)
+    next_gen = [combined_population[i] for i in sorted_indices[:N]]
+    next_gen_objs = [cleaned_objectives[i] for i in sorted_indices[:N]]
+
+    return next_gen, next_gen_objs
+
+  
 def run_evolution(
     num_tasks=20,
     num_robots=3,
@@ -101,24 +126,36 @@ def run_evolution(
 
         # Step 4: Assign fronts
         fronts = assign_fronts(objective_values)
-
         # Step 5: Clustering
         clusters = cluster_population(flattened, num_clusters)
-
         # Step 6: CSCD
         cscd_scores = compute_cscd_scores(flattened, objective_values, clusters, fronts)
-
         # Step 7: DBESM offspring generation
-        offspring = dbesm_selection(population, flattened, fronts, cscd_scores)
+        offspring = dbesm_selection(population, flattened, fronts, cscd_scores,num_robots)
 
+    
+        # Optionally, you can use next_gen and next_gen_objs for further processing
         # Combine populations
-        combined_population = population + offspring
+        # combined_population = population + offspring
         # combined_flattened = flatten_population(combined_population)
+
+        # Only evaluate offspring objectives and combine with parent objectives
         if gen < generations - 1:
-            # Use DRL planner for all generations except the last
-            combined_objectives = evaluate_population(combined_population, drl_planner)
+            offspring_objectives = evaluate_population(offspring, drl_planner)
         else:
-            combined_objectives = evaluate_population(combined_population, drl_last_gen)
+            offspring_objectives = evaluate_population(offspring, drl_last_gen)
+        
+        
+        # population,objective_values = next_gen_de(population,objective_values,offspring,offspring_objectives)
+
+        combined_population = population + offspring
+        combined_objectives = objective_values + offspring_objectives
+
+        # if gen < generations - 1:
+        #     # Use DRL planner for all generations except the last
+        #     combined_objectives = evaluate_population(combined_population, drl_planner)
+        # else:
+        #     combined_objectives = evaluate_population(combined_population, drl_last_gen)
 
         combined_population, combined_objectives = remove_duplicates(combined_population, combined_objectives)
         combined_flattened = flatten_population(combined_population)
@@ -128,6 +165,7 @@ def run_evolution(
         combined_clusters = cluster_population(combined_flattened, num_clusters)
         combined_cscd = compute_cscd_scores(combined_flattened, combined_objectives, combined_clusters, combined_fronts)
 
+        
         # Step 8: Select next generation
         population, objective_values = select_next_generation(
             combined_population,
@@ -142,25 +180,25 @@ def run_evolution(
         best = min(objective_values, key=lambda x: (x[0], x[1]))
         # tqdm.write(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
         print(f"Best in gen {gen}: f1 = {best[0]}, f2 = {best[1]}")
+        # print(f"Combined Population Size:{len(combined_population)}")
+        # print(f"Population Size:{len(population)}")
         #save best from each generation for plotting in a list
         best_in_gen.append(best)
 
 
-    
     return population, objective_values, best_in_gen
 
 
 if __name__ == "__main__":
     #Hyperparameters
-    NUM_TASKS = 40
+    NUM_TASKS = 30
     NUM_ROBOTS = 4
     POP_SIZE = 200
-    GENERATIONS = 200
-    NUM_CLUSTERS = 8
+    GENERATIONS = 100
+    NUM_CLUSTERS = 6
 
     #print hyperparameter
-    print(f"Hyperparameters:\n  NUM_TASKS = {NUM_TASKS}\n  NUM_ROBOTS = {NUM_ROBOTS}\n  \
-          POP_SIZE = {POP_SIZE}\n  GENERATIONS = {GENERATIONS}\n  NUM_CLUSTERS = {NUM_CLUSTERS}")
+    print(f"Hyperparameters:\n  NUM_TASKS = {NUM_TASKS}\n  NUM_ROBOTS = {NUM_ROBOTS}\n POP_SIZE = {POP_SIZE}\n  GENERATIONS = {GENERATIONS}\n  NUM_CLUSTERS = {NUM_CLUSTERS}")
 
     # Generate new task coordinates each run
     generate_task_coordinates(NUM_TASKS)
@@ -186,8 +224,8 @@ if __name__ == "__main__":
     print(f"Best Solution (Decision Space): {best_solution}")
 
     # Visualize results
-    plot_pareto_front(final_objs, title="Final Pareto Front", save_path=f"results/pareto_front_{time.strftime('%Y%m%d_%H%M%S')}.png")
-    plot_best_solution(best_solution, title=f"Best Path-{final_objs[best_idx]}", save_path=f"results/best_solution_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plot_pareto_front(final_objs, title="Final Pareto Front", save_path=f"results/pareto_front_{NUM_TASKS}T_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plot_best_solution(best_solution, title=f"Best Path-{final_objs[best_idx]}", save_path=f"results/{NUM_TASKS}T_best_solution_{time.strftime('%Y%m%d_%H%M%S')}.png")
     # plot_pareto_gen(best_in_gen, title="Pareto Front Over Generations", save_path=f"results/pareto_gen_{time.strftime('%Y%m%d_%H%M%S')}.png")
 
 

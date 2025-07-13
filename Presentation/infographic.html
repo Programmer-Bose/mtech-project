@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: A Deep Reinforcement Learning Approach to Multirobot Task Allocation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E6F1FF;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #00449E, #0170D3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            color: #0170D3;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .code-block {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .code-title {
+            font-weight: bold;
+            color: #00449E;
+            margin-bottom: 0.5rem;
+        }
+        .code-flow-box {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            font-weight: 600;
+            color: #0170D3;
+            min-height: 80px;
+            align-items: center;
+            justify-content: center;
+        }
+        .code-sub-flow-box {
+            background-color: #F0F8FF;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-weight: 500;
+            color: #00449E;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        .arrow-down {
+            font-size: 1.5rem;
+            color: #0170D3;
+            margin: 0.5rem auto;
+            display: block;
+        }
+        .network-diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px dashed #A1C6F8;
+            border-radius: 0.75rem;
+            background-color: #F8FAFC;
+        }
+        .network-node {
+            background-color: #E0F2FE;
+            border: 1px solid #90CAF9;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #0170D3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .network-edge {
+            font-size: 1.2rem;
+            color: #0170D3;
+            margin: 0.25rem 0;
+        }
+        .network-details {
+            font-size: 0.85rem;
+            color: #4A5568;
+            margin-top: 0.5rem;
+        }
+        .gemini-button {
+            background-color: #0170D3;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .gemini-button:hover {
+            background-color: #00449E;
+        }
+        .gemini-response-box {
+            background-color: #F0F8FF;
+            border: 1px solid #A1C6F8;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #00449E;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-4xl md:text-6xl font-black gradient-text mb-2">Smarter Swarms(MMOEA-DRL)</h1>
+            <p class="text-lg md:text-xl text-[#00449E] max-w-4xl mx-auto">A Deep Reinforcement Learning Approach to Optimizing Multirobot Task Allocation.</p>
+        </header>
+
+        <main>
+            <section id="problem" class="mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">The Multirobot Task Allocation (MRTA) Challenge</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">Imagine a team of robots needing to complete various tasks efficiently. This seemingly simple goal hides a very complex problem called Multirobot Task Allocation (MRTA). It's like trying to perfectly orchestrate a symphony with many musicians, each having different skills and instruments, while the stage itself keeps changing.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="kpi-card">
+                        <div class="text-5xl mb-3">⚙️</div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-2">Bi-Level Complexity</h3>
+                        <p class="text-gray-600">MRTA isn't just one problem; it's two problems nested inside each other, which we call "bi-level."</p>
+                        <ul class="text-sm text-gray-600 list-disc list-inside text-left mt-2">
+                            <li><b>Upper Level:</b> Assigning Tasks (Who does what? Which robot gets which task?)</li>
+                            <li><b>Lower Level:</b> Planning Paths (Once assigned, how does each robot efficiently travel between its tasks?)</li>
+                        </ul>
+                        <p class="text-sm text-gray-600 mt-2">Solving these two interconnected problems simultaneously is incredibly computationally expensive, like playing chess where every move opens up a new, complex sub-game.</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="text-5xl mb-3">🌪️</div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-2">Dynamic Environments</h3>
+                        <p class="text-gray-600">The real world is unpredictable. A perfectly planned task allocation scheme can become useless in an instant due to unforeseen events.</p>
+                        <ul class="text-sm text-gray-600 list-disc list-inside text-left mt-2">
+                            <li>A robot might break down.</li>
+                            <li>New obstacles could appear.</li>
+                            <li>New, urgent tasks might suddenly emerge.</li>
+                            <li>Communication might be lost.</li>
+                        </ul>
+                        <p class="text-sm text-gray-600 mt-2">Traditional methods often provide a single "best" plan, which is extremely brittle in such dynamic and uncertain scenarios, much like a fixed train schedule that can't cope with unexpected track closures.</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="text-5xl mb-3">💡</div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-2">Need for Diverse Solutions</h3>
+                        <p class="text-gray-600">Instead of just one "optimal" plan, what if we had several equally good plans?</p>
+                        <ul class="text-sm text-gray-600 list-disc list-inside text-left mt-2">
+                            <li>These are called "equivalent schemes" or "Plan B" options.</li>
+                            <li>Each scheme might assign tasks differently but achieve the same overall efficiency.</li>
+                        </ul>
+                        <p class="text-sm text-gray-600 mt-2">Having diverse, optimal solutions allows the robot system to be highly adaptive and robust. If Plan A suddenly becomes impossible (e.g., a robot malfunctions), the system can instantly switch to Plan B without losing efficiency, ensuring mission success. This is crucial for real-world reliability.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="solution" class="mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">Introducing MMOEA-DL: A Hybrid Approach</h2>
+                 <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">To tackle these significant challenges, we propose MMOEA-DL, a novel algorithm that combines the power of evolutionary search with the intelligence of deep reinforcement learning. It's like having a master strategist (MMOEA) who devises multiple excellent battle plans, and a team of brilliant navigators (DRL + LNS) who figure out the fastest way to execute each part of those plans.</p>
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10">
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+                        <div class="text-center p-4 border-2 border-dashed border-[#A1C6F8] rounded-lg">
+                            <div class="text-2xl font-bold text-[#0170D3] mb-2">Upper Level: Task Allocation (The "Strategist")</div>
+                            <div class="text-3xl">🗺️</div>
+                            <div class="mt-2 font-semibold text-[#00449E]">MMOEA (Multimodal Multiobjective Evolutionary Algorithm)</div>
+                            <p class="text-sm text-gray-600 mt-2">This component acts like a creative problem-solver that generates many different ways to assign tasks to robots. Instead of just finding one best way, it explores the possibilities to find multiple, equally good assignment strategies.</p>
+                            <ul class="text-sm text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>Evolutionary Algorithm:</b> Inspired by natural selection, it iteratively improves solutions over "generations" by combining and mutating existing good solutions.</li>
+                                <li><b>Multimodal:</b> It's designed to find not just one peak (best solution) but all the equivalent peaks in the solution landscape.</li>
+                                <li><b>Multiobjective:</b> It considers multiple goals simultaneously, like minimizing total travel distance and ensuring all robots finish around the same time.</li>
+                            </ul>
+                        </div>
+                        <div class="flow-arrow transform md:rotate-0 rotate-90">→</div>
+                        <div class="text-center p-4 border-2 border-dashed border-[#A1C6F8] rounded-lg">
+                            <div class="text-2xl font-bold text-[#0170D3] mb-2">Lower Level: Path Planning (The "Navigators")</div>
+                            <div class="text-3xl">🤖</div>
+                            <div class="mt-2 font-semibold text-[#00449E]">DRL + LNS (Deep Reinforcement Learning & Large Neighborhood Search)</div>
+                            <p class="text-sm text-gray-600 mt-2">Once the MMOEA assigns tasks to individual robots, this powerful combination steps in to figure out the absolute most efficient path for each robot to visit its assigned tasks (a classic "Traveling Salesperson Problem" for each robot).</p>
+                            <ul class="text-sm text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>Reinforcement Learning (DRL):</b> Think of this as a highly trained AI "pilot" for each robot. It learns by trial and error, through vast experience, to quickly find near-optimal paths without needing explicit instructions for every new situation. It's incredibly fast and scalable.</li>
+                                <li><b>Large Neighborhood Search (LNS):</b> This is a "smart tuner" that takes the path found by DRL and looks for small, clever rearrangements to make it even more efficient. It's great at finding those last few percentage points of optimization, especially valuable for smaller groups of tasks.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-center text-gray-700 font-semibold mt-8 max-w-4xl mx-auto">By cleverly integrating these components, MMOEA-DL transforms the previously complex bi-level MRTA problem into a more manageable single-level optimization, where the lower-level path planning is quickly handled by the DRL and LNS, allowing the upper-level MMOEA to efficiently find the best overall task assignments.</p>
+                </div>
+            </section>
+
+            <!-- <section id="gemini-features" class="mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">Explore with AI Insights</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">Curious about a specific term? Or want to brainstorm new ideas? Our AI assistant can help clarify concepts and suggest innovative applications for multirobot systems!</p>
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 flex flex-col items-center gap-6">
+                    <div class="flex flex-col md:flex-row gap-4 w-full justify-center">
+                        <button id="explainConceptBtn" class="gemini-button flex-grow md:flex-grow-0">✨ Explain a Key Term</button>
+                        <button id="suggestApplicationBtn" class="gemini-button flex-grow md:flex-grow-0">✨ Suggest an Application</button>
+                    </div>
+                    <div id="geminiResponse" class="gemini-response-box w-full max-w-2xl text-gray-700">
+                        Click a button to get an AI-powered insight!
+                    </div>
+                </div>
+            </section> -->
+
+            <section id="code-diagrams" class="mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">How the DRL Code Works</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">This section illustrates the core logic of the Deep Reinforcement Learning (DRL) model used for efficient path planning. It's the "brain" that guides individual robots to their tasks.</p>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 mb-8">
+                    <h3 class="text-xl font-bold text-center mb-6 text-[#0170D3]">The DRL Training Cycle: Learning Optimal Paths</h3>
+                    <p class="text-sm text-gray-600 text-center mb-6">Our DRL model learns to find the best paths by repeatedly trying, getting feedback, and adjusting. It's trained on <b>200,000 instances</b> of TSP-like problems, processed in <b>batches of 256</b>, with each batch refined over <b>20 epochs</b>.</p>
+                    <div class="flex flex-col items-center">
+                        <div class="code-flow-box w-full max-w-sm">START TRAINING</div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">Generate Random Task Coordinates (for 50 tasks)</div>
+                        <div class="arrow-down">↓</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+                            <div class="flex flex-col items-center p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF]">
+                                <h4 class="text-lg font-bold text-[#00449E] mb-2">The ACTOR: Chooses a Path</h4>
+                                <p class="text-sm text-gray-600 text-center mb-4">The Actor is the decision-maker. It learns to pick the next best task to visit, building the robot's path step-by-step.</p>
+                                <div class="network-diagram-container w-full">
+                                    <div class="network-node">Input: Task Coordinates (x,y)</div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">
+                                       <b>Embedding Layer</b> (1 FC Layer)
+                                        <div class="network-details">Converts 2D coords to 256-dim vector.</div>
+                                    </div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">
+                                       <b>GRU Encoder</b> (1 GRU Layer)
+                                        <div class="network-details">Summarizes all task info into a "memory" (256-dim).</div>
+                                    </div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">
+                                       <b>GRU Decoder</b> (1 GRU Layer)
+                                        <div class="network-details">Uses memory to predict next task, step-by-step.</div>
+                                    </div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">
+                                       <b>Attention Mechanism</b> (3 FC Layers)
+                                        <div class="network-details">Focuses Decoder on most relevant tasks for the next choice.</div>
+                                    </div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">Output: Path Choices & Probabilities</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF]">
+                                <h4 class="text-lg font-bold text-[#00449E] mb-2">The CRITIC: Evaluates the State</h4>
+                                <p class="text-sm text-gray-600 text-center mb-4">The Critic is the evaluator. It assesses how "good" a given set of tasks and the current path progress are, providing feedback to the Actor.</p>
+                                <div class="network-diagram-container w-full">
+                                    <div class="network-node">Input: Encoded Task Information (from Actor's Encoder)</div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">
+                                       <b>Value Network</b> (2 FC Layers with ReLU)
+                                        <div class="network-details">Processes encoded info to estimate state value (256-dim to 256-dim, then to 1-dim).</div>
+                                    </div>
+                                    <div class="network-edge">↓</div>
+                                    <div class="network-node">Output: How "Good" is the Current Situation? (A single value)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            Calculate REWARD<br>(e.g., Negative of Total Path Length)
+                            <p class="text-xs font-normal text-gray-500 mt-1">Shorter path = Higher reward.</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            Calculate ADVANTAGE<br>(Reward - Critic's "Goodness" Estimate)
+                            <p class="text-xs font-normal text-gray-500 mt-1">How much better/worse was the actual outcome than expected?</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+                            <div class="code-flow-box w-full">
+                               <b>ACTOR LOSS</b><br>Adjusts Actor to Choose Better Paths
+                                <p class="text-xs font-normal text-gray-500 mt-1">(Based on Advantage: If the Actor did better than expected, it reinforces those choices.)</p>
+                            </div>
+                            <div class="code-flow-box w-full">
+                               <b>CRITIC LOSS</b><br>Adjusts Critic to Predict "Goodness" More Accurately
+                                <p class="text-xs font-normal text-gray-500 mt-1">(Based on Actual Reward: Helps the Critic learn to give more precise evaluations.)</p>
+                            </div>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            Optimize Networks (Adam Optimizer)
+                            <p class="text-xs font-normal text-gray-500 mt-1">Adjusts the internal "weights" of both Actor and Critic.</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">Loop for Many Epochs/Batches
+                            <p class="text-xs font-normal text-gray-500 mt-1">20 Epochs/256 Batches</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">Save Trained Actor & Critic Models
+                            <p class="text-xs font-normal text-gray-500 mt-1">Save the Model Weights</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">END TRAINING</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 mt-12">
+                    <h3 class="text-xl font-bold text-center mb-6 text-[#0170D3]">Deep Dive: GRU Encoder, Decoder, and Attention</h3>
+                    <p class="text-center max-w-3xl mx-auto mb-8 text-gray-600">These are the specialized neural network components within the Actor that allow it to understand task layouts and generate optimal travel paths.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>1. Embedding Layer</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> Takes the basic (x,y) coordinates of each task and converts them into a richer, higher-dimensional "feature vector." Think of it as translating simple addresses into a more descriptive summary that the network can better understand.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>2. GRU Encoder</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> Reads through all the task embeddings one by one and creates a comprehensive "summary" or "memory" of the entire set of tasks. It captures the relationships and overall layout of all the tasks a robot needs to visit.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>3. GRU Decoder</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> This is the "path generator." Starting from the robot's initial position, it uses the Encoder's "memory" to decide the next task to visit, one step at a time. It keeps track of the path built so far.</p>
+                                
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>4. Attention Mechanism</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> As the GRU Decoder decides the next task, the Attention Mechanism acts like a "spotlight." It looks back at <b>all</b> the original tasks (from the Encoder's output) and highlights which ones are most relevant for the <b>current</b> decision. This helps the Decoder avoid getting lost and ensures it picks the most logical next step, even if it's not the closest one.</p>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 mt-12">
+                    <h3 class="text-xl font-bold text-center mb-6 text-[#0170D3]">The Actor-Critic Algorithm: Learning by Doing and Evaluating</h3>
+                    <p class="text-center max-w-3xl mx-auto mb-8 text-gray-600">The Actor-Critic algorithm is a powerful method in Reinforcement Learning that teaches an AI to make good decisions. It works by having two main components that constantly learn from each other, much like a student (the Actor) who tries new things and a coach (the Critic) who provides feedback.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
+                        <div class="p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF] flex flex-col items-center">
+                            <h4 class="text-center font-bold text-[#00449E] mb-2">The <b>Actor</b> (Policy Network)</h4>
+                            <p class="text-sm text-gray-600 text-center mb-4">The Actor's job is to decide <b>what action to take</b> given the current situation (state). In our case, it decides which task the robot should visit next to build the optimal path.</p>
+                            <p class="text-sm text-gray-600 text-center mt-2"><b>How it learns:</b> It adjusts its strategy based on the "Advantage" signal from the Critic. If an action led to a better-than-expected outcome, the Actor is more likely to take that action again.</p>
+                            <img class= "mt-4" src="actorloss.jpg" alt="al">
+                        </div>
+                        <div class="p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF] flex flex-col items-center">
+                            <h4 class="text-center font-bold text-[#00449E] mb-2">The <b>Critic</b> (Value Network)</h4>
+                            <p class="text-sm text-gray-600 text-center mb-4">The Critic's job is to <b>evaluate how good the current situation (state) is</b>. It provides an estimate of the total future rewards the agent can expect from that state.</p>
+                            <p class="text-sm text-gray-600 text-center mt-2"><b>How it learns:</b> It adjusts its predictions to be closer to the actual rewards received. If it underestimated the goodness of a state, it learns to predict higher next time, and vice-versa.</p>
+                            <img class= "mt-4" src="criticloss.jpg" alt="cl">
+                        </div>
+                        <div class="p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF] flex flex-col items-center">
+                            <h4 class="text-center font-bold text-[#00449E] mb-2"><b>The Advantage Function</b> Bridging Actor & Critic</h4>
+                            <p class="text-sm text-gray-600 text-center mb-4">The <b>Advantage A(s,a)</b> is the key signal that connects the Actor and Critic. It tells the Actor not just if an action was good, but <b>how much better or worse it was than what the Critic expected</b>.</p>
+                            <p class="text-sm text-gray-600 text-center mt-2"><b>How it Works:</b>This makes the Actor's learning more stable and efficient, as it focuses on surprising outcomes rather than just raw rewards.</p>
+                            <img class= "mt-4" src="advantage.jpg" alt="adv">
+                        </div>
+                    </div>
+            
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 mt-12">
+                    <h3 class="text-xl font-bold text-center mb-6 text-[#0170D3]">Path Optimization: DRL Inference & LNS Refinement</h3>
+                    <p class="text-center max-w-3xl mx-auto mb-8 text-gray-600">Once the DRL model is trained, it can quickly infer (predict) an initial efficient path. This path is then further improved by the Large Neighborhood Search (LNS) algorithm for even better results.</p>
+
+                    <div class="flex flex-col items-center">
+                        <div class="code-flow-box w-full max-w-sm">Input: New Set of Task Coordinates (for a Robot)</div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            <b>DRL Actor Inference</b>
+                            <p class="text-xs font-normal text-gray-500 mt-1">The trained Actor network predicts an initial tour sequence.</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            Initial Path & Length from DRL
+                            <p class="text-xs font-normal text-gray-500 mt-1">Returns Task Visiting Sequence & Path Length</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">
+                            <b>Large Neighborhood Search (LNS)</b>
+                            <p class="text-xs font-normal text-gray-500 mt-1">Iteratively refines the DRL path using "destroy" and "repair" operations.</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="code-flow-box w-full max-w-sm">Output: Optimized Path & Length from LNS
+                            <p class="text-xs font-normal text-gray-500 mt-1">Returns <b>Best Task Visiting Sequence & Path Length</b></p>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 mt-12">
+                    <h3 class="text-xl font-bold text-center mb-6 mt-12 text-[#0170D3]">Deep Dive: Large Neighborhood Search (LNS)</h3>
+                    <p class="text-center max-w-3xl mx-auto mb-8 text-gray-600">LNS is a powerful optimization technique that takes an existing solution (like the path from DRL) and tries to improve it by intelligently making large changes, rather than just tiny tweaks. It's like having a dedicated editor to polish a good draft into a great one.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>1. Destroy Operator</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> Randomly removes a portion of the current path (e.g., 5 tasks). This creates a "broken" or "partial" path. This isn't just a small change; it's a deliberate disruption to escape local traps.</p>
+                                
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>2. Repair Operator</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> Takes the "broken" path and intelligently re-inserts the removed tasks back into the best possible positions. It tries to find the cheapest (shortest) way to put them back, completing the path again.</p>
+                                
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="code-flow-box w-full"><b>3. Acceptance Criterion (Simulated Annealing)</b></div>
+                            <div class="arrow-down">↓</div>
+                            <div class="code-sub-flow-box w-full">
+                                <p><b>What it does:</b> Decides whether to accept the newly repaired path. If the new path is shorter, it's always accepted. If it's slightly longer, it might still be accepted with a small probability (which decreases over time, like "cooling" metal). This helps avoid getting stuck in mediocre solutions and encourages exploration early on.</p>                            </div>
+                            </div>
+                    </div>
+                    <hr class="my-8 border-t-2 border-dashed border-[#A1C6F8]">
+                    <p class="text-gray-500 font-semibold mt-8 max-w-4xl mx-auto">
+                        <img class= "mt-4" width=100% src="lns.jpg" alt="lns">
+                        It can be observed that the destroy operator is used to randomly select
+                        two task points (i.e., “3” and “4”) from the individual, and
+                        then obtain a destroy individual (i.e., “1” → “2” → “5”).
+                        For the repair operator, the task point “3” is inserted into
+                        the destroyed individual in turn, resulting in three repaired
+                        individuals. If the repaired individual “1” → “2” → “3”
+                        →“5” is the best, then the repair operator continues to be
+                        used to generate repaired individuals. Like the task point “3,”
+                        the task point “4” is inserted into the repaired individual “1”
+                        →“2” → “3” → “5” in sequence. Clearly, the number of
+                        repaired individuals in the neighborhood N(x) is four.
+                    </p>
+                    <hr class="my-8 border-t-2 border-dashed border-[#A1C6F8]">
+                    <p class="text-center text-gray-700 font-semibold mt-8 max-w-4xl mx-auto">This "Destroy-Repair-Accept" cycle is repeated thousands of times (e.g., <b>1000 iterations</b> in your code), constantly searching for better path arrangements. LNS is excellent at finding significant improvements over the DRL's initial good solution.</p>
+                
+                </div>
+            </section>
+            
+            <section id="results" class="mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">DRL + LNS : Results</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">Side by side comparison of Path Planning by DRL & DRL+LNS </p>
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 text-lg text-gray-500 text-lg">
+                    <img class="text-center" src="drl_lns.jpeg" alt="comparison1">
+                    <p class="text-lg">
+                            --- Initial Tour from RL Model ---<br>
+                            RL Inferred tour (indices): [4, 17, 23, 18, 9, 25, 6, 22, 20, 34, 13, 27, 16, 21, 1, 15, 11, 29, 7, 10, 5, 30, 24, 33, 32, 12, 38, 26, 8, 14, 37, 19, 35, 36, 2, 28, 3, 39, 0, 31]<br>
+                            RL Tour Length: 5.1660<br>
+
+                            --- Applying LNS to improve RL tour ---<br>
+                            Starting LNS. Initial Tour Cost: 5.1660 <br>
+                            LNS Finished. Best Tour Cost: 4.9935<br>
+                            LNS Optimized tour (indices): [0, 31, 16, 27, 13, 34, 17, 23, 18, 9, 8, 38, 26, 25, 6, 22, 20, 21, 1, 15, 11, 29, 7, 10, 33, 5, 30, 24, 32, 12, 14, 37, 19, 35, 4, 3, 36, 28, 2, 39]<br>
+                            LNS Optimized Tour Length: 4.9935<br>
+
+                            Optimization Summary:<br>
+                            RL Model Tour Length: 5.1660<br>
+                            LNS Optimized Tour Length: 4.9935<br>
+                            LNS improved tour by: 0.1725<br>
+                        </p>
+                        <hr class="my-8 border-t-2 border-dashed border-[#A1C6F8]">
+                        <img class="text-center"  src="drl_lns1.jpeg" alt="comparison2">
+                        <p class="text-lg">
+                                                    --- Initial Tour from RL Model ---<br>
+                            RL Inferred tour (indices): [10, 11, 12, 2, 5, 15, 1, 14, 6, 8, 19, 17, 9, 7, 18, 3, 13, 0, 4, 16]<br>
+                            RL Tour Length: 4.8006<br>
+
+                                                    --- Applying LNS to improve RL tour ---<br>
+                            Starting LNS. Initial Tour Cost: 4.8006<br>
+                            LNS Finished. Best Tour Cost: 3.8681<br>
+                            LNS Optimized tour (indices): [0, 13, 2, 12, 5, 15, 18, 3, 7, 9, 17, 4, 16, 8, 6, 19, 14, 1, 11, 10]<br>
+                            LNS Optimized Tour Length: 3.8681<br>
+
+                            Optimization Summary:<br>
+                            RL Model Tour Length: 4.8006<br>
+                            LNS Optimized Tour Length: 3.8681<br>
+                            LNS improved tour by: 0.9324<br>
+                        </p>
+                </div>
+                
+            </section>
+        </main>
+
+        <footer class="text-center mt-16 text-xs text-gray-500">
+            <p>Infographic based on the paper: "A Deep Reinforcement Learning-Assisted Multimodal Multiobjective Bilevel Optimization Method for Multirobot Task Allocation" by Yu et al., IEEE TEC, 2025.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        function labelWrapper(label, maxLength) {
+            if (label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine.trim());
+            }
+            return lines;
+        }
+
+        const sharedTooltipOptions = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        async function callGeminiAPI(prompt) {
+            const geminiResponseDiv = document.getElementById('geminiResponse');
+            geminiResponseDiv.innerHTML = '<div class="flex items-center justify-center text-[#0170D3]"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-[#0170D3]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opatask-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opatask-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating response...</div>';
+            
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    geminiResponseDiv.innerHTML = text;
+                } else {
+                    geminiResponseDiv.innerHTML = 'Error: Could not get a valid response from the AI.';
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                geminiResponseDiv.innerHTML = 'Error: Failed to connect to the AI. Please try again.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const explainConceptBtn = document.getElementById('explainConceptBtn');
+            const suggestApplicationBtn = document.getElementById('suggestApplicationBtn');
+
+            const keyTerms = [
+                "Bi-Level Optimization",
+                "Multimodal Optimization",
+                "Deep Reinforcement Learning",
+                "GRU (Gated Recurrent Unit)",
+                "Attention Mechanism",
+                "Actor-Critic Method",
+                "Traveling Salesperson Problem (TSP)",
+                "Large Neighborhood Search (LNS)"
+            ];
+
+            explainConceptBtn.addEventListener('click', () => {
+                const randomTerm = keyTerms[Math.floor(Math.random() * keyTerms.length)];
+                const prompt = `Explain "${randomTerm}" in very simple terms for a general audience, without using technical jargon. Keep it concise, around 2-3 sentences.`;
+                callGeminiAPI(prompt);
+            });
+
+            suggestApplicationBtn.addEventListener('click', () => {
+                const prompt = `Given a multirobot task allocation problem, suggest a novel and creative real-world application scenario for the MMOEA-DL algorithm, focusing on how its ability to find diverse and efficient solutions would be beneficial. Make it concise, around 3-4 sentences.`;
+                callGeminiAPI(prompt);
+            });
+        });
+    </script>
+</body>
+</html>
