@@ -258,3 +258,19 @@ if __name__ == "__main__":
     #     for r, tasks in enumerate(individual):
     #         print(f"  Robot {r+1}: {tasks}")
 
+    # Pseudocode for run_evolution function (one generation loop):
+
+    # 1. Initialize the population (randomly or from a resume file)
+    # 2. For each generation:
+    #     a. Flatten the population for clustering/diversity
+    #     b. Evaluate the population using the DRL planner (or LNS in the last generation)
+    #     c. Assign Pareto fronts based on objective values
+    #     d. Cluster the population in decision space
+    #     e. Compute CSCD (diversity) scores
+    #     f. Generate offspring using DBESM selection/variation
+    #     g. Evaluate offspring
+    #     h. Combine parent and offspring populations, remove duplicates
+    #     i. Recalculate fronts, clusters, and CSCD for the combined population
+    #     j. Select the next generation based on fronts and CSCD
+    #     k. Track and print the best solution in this generation
+    # 3. Return the final population, objectives, and best-in-generation list

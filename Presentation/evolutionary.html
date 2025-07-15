@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The Evolutionary Algorithm Core of MMOEA-DL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E6F1FF;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #00449E, #0170D3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        .flow-box {
+            background-color: #E0F2FE;
+            border: 1px solid #90CAF9;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #0170D3;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow-arrow-down {
+            font-size: 1.5rem;
+            color: #0170D3;
+            margin: 0.5rem auto;
+            display: block;
+        }
+        .sub-section-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00449E;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .concept-box {
+            background-color: #F0F8FF;
+            border: 1px solid #A1C6F8;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            color: #00449E;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .concept-explanation {
+            font-size: 0.9rem;
+            color: #4A5568;
+            margin-top: 0.5rem;
+        }
+        .grid-flow-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: start;
+        }
+        .grid-flow-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gemini-button {
+            background-color: #0170D3;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .gemini-button:hover {
+            background-color: #00449E;
+        }
+        .gemini-response-box {
+            background-color: #F0F8FF;
+            border: 1px solid #A1C6F8;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #00449E;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <a href="index.html" class="inline-block mb-6 px-6 py-2 rounded-lg bg-[#0170D3] text-white font-semibold shadow hover:bg-[#00449E] transition-colors duration-200">
+            ← Home
+        </a>
+        <header class="text-center mb-8 md:mb-16">
+            <h2 class="text-4xl md:text-6xl font-black gradient-text mb-4">The Evolutionary Core</h1>
+            <p class="text-lg md:text-xl text-[#00449E] max-w-4xl mx-auto">Understanding the Multimodal Multiobjective Evolutionary Algorithm (MMOEA) for Task Allocation.</p>
+        </header>
+
+        <main>
+            <section id="intro" class="section-card">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">Evolving Smarter Robot Teams</h2>
+                <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">At the heart of our solution is an advanced Evolutionary Algorithm (EA). Just like in nature, this algorithm "evolves" better and more diverse task allocation plans over many "generations." It's designed to find not just one optimal way to assign tasks, but many equally good, yet different, strategies.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">What's an "Individual" (Solution)?</h3>
+                        <p class="text-gray-600 mb-4">In our algorithm, an "individual" or "solution" is a complete plan for how all tasks are assigned among the robots. For example, if we have 10 tasks and 4 robots, a solution might look like: "Robot 1 handles tasks 0, 2, 4; Robot 2 handles tasks 1, 3, 6; Robot 3 handles tasks 5, 7, 8, 9."</p>
+                        <div class="concept-box">
+                            <b>Example Individual (Allocation Plan):</b>
+                            <p class="concept-explanation">Robot 0: [Task 7, Task 2, Task 0, Task 4]</p>
+                            <p class="concept-explanation">Robot 1: [Task 6, Task 3, Task 1]</p>
+                            <p class="concept-explanation">Robot 2: [Task 5, Task 8, Task 9]</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">Our Optimization Goals (Objectives)</h3>
+                        <p class="text-gray-600 mb-4">We want to make our robot team as efficient as possible. This means optimizing for two main goals simultaneously:</p>
+                        <div class="concept-box">
+                            <p class="font-bold">Objective 1 (f1): Minimize Total Path Length</p>
+                            <p class="concept-explanation">The sum of all distances traveled by all robots. We want to reduce the overall travel burden.</p>
+                        </div>
+                        <div class="concept-box">
+                            <p class="font-bold">Objective 2 (f2): Minimize Max Robot Completion Time</p>
+                            <p class="concept-explanation">The time taken by the busiest robot to finish all its assigned tasks. We want to ensure no single robot is overloaded and the whole mission finishes quickly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mt-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">What is Multiobjective Optimization?</h3>
+                        <p class="text-gray-600 mb-4">Multiobjective optimization means finding solutions that balance several goals at once. In our case, we want to minimize both the total path length and the maximum robot completion time. There’s rarely a single “best” solution—usually, there’s a set of trade-offs, called the <b>Pareto front</b>, where improving one objective would worsen another.</p>
+                        <div class="concept-box">
+                            <b>Pareto Optimality:</b>
+                            <p class="concept-explanation">A solution is Pareto optimal if no other solution is better in all objectives. The set of all such solutions forms the Pareto front.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">What is Multimodality?</h3>
+                        <p class="text-gray-600 mb-4">Multimodality means searching for <b>diverse</b> solutions that are structurally different, not just similar plans with slightly different scores. This is important because in real-world scenarios, different allocation strategies may be preferable under changing conditions or constraints.</p>
+                        <div class="concept-box">
+                            <b>Why Multimodality?</b>
+                            <p class="concept-explanation">By finding multiple, fundamentally different solutions, we provide flexibility and robustness—allowing the system to adapt if some robots fail or tasks change.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mt-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">Pareto Set</h3>
+                        <!-- <div class="concept-box"> -->
+                            <p class="concept-explanation">
+                                The <b>Pareto set</b> is the set of all solutions in the <b>decision space</b> (i.e., all possible task allocation plans) that are Pareto optimal. These are the allocation plans for which no other plan is better in all objectives.
+                            </p>
+                        <!-- </div> -->
+                        <div class="concept-box">
+                            <b>Example:</b>
+                            <p class="concept-explanation">
+                                If you have three different allocation plans, and none of them is strictly better than the others in both objectives, all three belong to the Pareto set.
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#0170D3] mb-3">Pareto Front</h3>
+                        <!-- <div class="concept-box">
+                            <b>Definition:</b> -->
+                            <p class="concept-explanation">
+                                The <b>Pareto front</b> is the set of corresponding points in the <b>objective space</b> (e.g., total path length vs. max robot time) achieved by the Pareto set. It visually shows the trade-off curve between objectives.
+                            </p>
+                        <!-- </div> -->
+                        <div class="concept-box">
+                            <b>Example:</b>
+                            <p class="concept-explanation">
+                                If you plot all Pareto optimal solutions on a graph (e.g., path length vs. completion time), the curve formed by these points is the Pareto front.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex flex-col items-center">
+                    <h3 class="text-2xl font-bold text-[#0170D3] mb-3">Example: Pareto Set &  Front Visualization</h3>
+                    <p class="text-gray-600 mb-4 text-center max-w-xl">
+                        Below is a sample plot showing Pareto optimal solutions for two objectives: total path length and max robot completion time. Each point represents a different allocation plan. The curve formed by these points is the Pareto front.
+                    </p>
+                    <img src="https://www.researchgate.net/publication/305754592/figure/fig1/AS:390238535995393@1470051525548/Pareto-set-and-Pareto-front-46.png" alt="Pareto Front Example" class="rounded-lg shadow-md border border-blue-200 max-w-xs md:max-w-xl mb-2">
+                    <span class="text-xs text-gray-500">Illustrative example: Each dot is a different allocation plan; the curve is the Pareto front.</span>
+                </div>
+            </section>
+
+            <section id="main-loop" class="section-card">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">The Main Evolutionary Loop</h2>
+                <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">This flowchart illustrates the step-by-step process our MMOEA goes through in each generation to evolve better task allocation plans.</p>
+
+                <div class="flex flex-col items-center">
+                    <div class="flow-box w-full max-w-md">START EVOLUTIONARY ALGORITHM</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Initialize Population<br>(200 individuals)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md bg-[#62A4F2] text-white">Start LOOP for Generations<br>(e.g., 100 Generations)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Flatten Population</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Evaluate Population<br>(using DRL planner or DRL+LNS in last gen)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Assign Pareto Fronts<br>(Lower=Better)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Cluster Population in Decision Space<br>(K-Means Clustering)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Compute CSCD Scores<br>(Higher=Diverse Solution)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Select Elites/Exemplars<br>(depending on CSCD Scores)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Generate Offspring<br>(using Differential Evolution)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Evaluate Offspring<br>(using DRL planner or DRL+LNS in last gen)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Combine Parent & Offspring Populations,<br>Remove Duplicates</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Recalculate Fronts, Clusters, CSCD for<br>Combined Population</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Select Next Generation<br>(based on Fronts & CSCD)</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Track & Print Best Solution in this Generation</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md bg-[#62A4F2] text-white">END LOOP</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">Return Final Population, Objectives, & Best-in-Generation List</div>
+                    <div class="flow-arrow-down">↓</div>
+                    <div class="flow-box w-full max-w-md">END EVOLUTIONARY ALGORITHM</div>
+                </div>
+                <div class="flex justify-center mt-8">
+                    <a href="https://github.com/Programmer-Bose/mtech-project/tree/main/mmoea_drl_pp/mmoea-drl-final" target="_blank" rel="noopener">
+                        <button class="gemini-button text-lg px-8 py-3 flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 2.92-.39c.99 0 1.99.13 2.92.39 2.22-1.49 3.2-1.18 3.2-1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/>
+                            </svg>
+                            View Code on GitHub
+                        </button>
+                    </a>
+                </div>
+            </section>
+            
+
+            <section id="components" class="section-card">
+                <h2 class="sub-section-header">Key Components in Detail</h2>
+                <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Let's break down the individual modules that make our evolutionary algorithm so powerful.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    <!-- Encoding -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>1. Encoding & Representation</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`encoding.py`</p>
+                            <p class="concept-explanation text-left">This module defines how a task allocation plan is structured in our code. It allows us to easily convert between a human-readable "tasks per robot" list and a flat numerical vector, which is essential for mathematical operations in the algorithm.</p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`generate_individual(num_tasks, num_robots)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> `num_tasks` (int), `num_robots` (int)</li>
+                                        <li><b>Output:</b> A new, randomly generated task allocation plan (List[List[int]]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`flatten_individual(individual)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> A task allocation plan (List[List[int]]).</li>
+                                        <li><b>Output:</b> A flattened representation of the task allocation (List[int], with -1 separators).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`unflatten_individual(flattened)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> A flattened task sequence (List[int]).</li>
+                                        <li><b>Output:</b> The unflattened task allocation plan (List[List[int]]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`remove_duplicates(population, objectives=None)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> A list of task allocation plans (List[List[List[int]]]), optional corresponding objective values (List[Tuple[float, float]]).</li>
+                                        <li><b>Output:</b> The population with unique individuals (List[List[List[int]]]), and optionally their objective values (List[Tuple[float, float]]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>2. Evaluation</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`evaluation.py` & `planner_interface.py`</p>
+                            <p class="concept-explanation text-left">This is where each task allocation plan gets its "score." For every robot in a given plan, we ask our highly trained DRL model (and LNS) to find the absolute shortest path for its assigned tasks. These individual robot path lengths are then combined to get the overall score for the entire plan.</p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`evaluate_individual(individual, drl_planner)`</b> (from `evaluation.py`)
+                                    <ul>
+                                        <li><b>Input:</b> A complete task allocation plan (List[List[int]]), a function reference for DRL path planning (`evaluate_drl` or `evaluate_drl_lns`).</li>
+                                        <li><b>Output:</b> Total path length (float) and maximum robot completion time (float) for the given plan.</li>
+                                    </ul>
+                                </li>
+                                <li><b>`evaluate_drl(robot_id, task_seq)`</b> (from `planner_interface.py`)
+                                    <ul>
+                                        <li><b>Input:</b> Robot ID (int), sequence of task IDs for that robot (List[int]).</li>
+                                        <li><b>Output:</b> Path length inferred by the DRL model (float), and the reordered sequence of tasks (List[int]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`evaluate_drl_lns(robot_id, task_seq)`</b> (from `planner_interface.py`)
+                                    <ul>
+                                        <li><b>Input:</b> Robot ID (int), sequence of task IDs for that robot (List[int]).</li>
+                                        <li><b>Output:</b> Path length refined by LNS (float), and the reordered sequence of tasks after DRL and LNS (List[int]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Non-dominated Sorting (NSGA-II) -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>3. Non-dominated Sorting</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`nsga2.py`</p>
+                            <p class="concept-explanation text-left">When we have multiple objectives (like minimizing total path AND max robot time), it's not always clear which solution is "best." Non-dominated sorting helps us rank solutions by identifying "Pareto Fronts."</p>
+                            <p class="concept-explanation text-left mt-2"><b>Key Concepts:</b></p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left">
+                                <li><b>Dominance:</b> Solution A dominates Solution B if A is better or equal on all objectives, and strictly better on at least one.</li>
+                                <li><b>Pareto Fronts:</b>
+                                    <ul>
+                                        <li><b>Front 0:</b> Contains all solutions that are not dominated by any other solution in the population (these are the "best" trade-offs).</li>
+                                        <li><b>Front 1, 2, ...:</b> Solutions dominated by Front 0, then by Front 1, and so on.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`dominates(a, b)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Objective values of solution A (Tuple[float, float]), Objective values of solution B (Tuple[float, float]).</li>
+                                        <li><b>Output:</b> Boolean (`True` if A dominates B, `False` otherwise).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`assign_fronts(objective_values)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> List of objective values for the population (List[Tuple[float, float]]).</li>
+                                        <li><b>Output:</b> List of Pareto front ranks for each individual (List[int]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Clustering -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>4. Clustering</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`clustering.py`</p>
+                            <p class="concept-explanation text-left">Since we want to find *diverse* solutions (multimodal), we group similar task allocation plans together. This helps us ensure we don't just find one type of good solution, but many different types.</p>
+                            <p class="concept-explanation text-left mt-2"><b>How it works:</b> We use a technique called K-Means clustering on the "flattened" representation of our task allocation plans. This groups plans that are structurally similar in terms of how tasks are assigned to robots.</p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`cluster_population(flattened_population, num_clusters)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> List of flattened task sequences (List[List[int]]), desired number of clusters (int).</li>
+                                        <li><b>Output:</b> List of cluster IDs for each individual (List[int]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- CSCD -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>5. CSCD (Clustering-based Special Crowding Distance)</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`cscd.py`</p>
+                            <p class="concept-explanation text-left">This is a sophisticated metric that helps us measure the "loneliness" or "uniqueness" of a solution in both the objective space (its performance scores) and the decision space (its task allocation structure). Solutions that are "lonelier" are more diverse and thus more valuable for maintaining multimodal solutions.</p>
+                            <p class="concept-explanation text-left mt-2"><b>How it works:</b></p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left">
+                                <li>Calculates "crowding" in the <b>decision space</b> (how unique the task assignment is within its cluster).</li>
+                                <li>Calculates "crowding" in the <b>objective space</b> (how unique its performance scores are within its Pareto front).</li>
+                                <li>Combines these two scores to give a comprehensive CSCD value. Higher CSCD means more diversity.</li>
+                            </ul>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`normalize_vectors(vectors)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> List of numerical vectors (List[List[float]] or List[Tuple[float, float]]).</li>
+                                        <li><b>Output:</b> Normalized NumPy array (numpy.ndarray).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`compute_decision_space_crowding(flattened_population, cluster_labels)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> List of flattened task sequences (List[List[int]]), cluster IDs (List[int]).</li>
+                                        <li><b>Output:</b> Crowding distance scores in decision space (List[float]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`compute_objective_space_crowding(objective_values, front_labels)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Objective values (List[Tuple[float, float]]), Pareto front ranks (List[int]).</li>
+                                        <li><b>Output:</b> Crowding distance scores in objective space (List[float]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`compute_cscd(crowding_x, crowding_f)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Crowding scores from decision space (List[float]), Crowding scores from objective space (List[float]).</li>
+                                        <li><b>Output:</b> Combined CSCD scores (List[float]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`compute_cscd_scores(flattened_population, objective_values, cluster_labels, front_labels)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Flattened task sequences (List[List[int]]), objective values (List[Tuple[float, float]]), cluster IDs (List[int]), Pareto front ranks (List[int]).</li>
+                                        <li><b>Output:</b> Final CSCD scores for the population (List[float]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- DBESM -->
+                    <div class="flex flex-col items-center">
+                        <div class="flow-box w-full"><b>6. DBESM (Distance Based Elite Selection Mechanism)</b></div>
+                        <div class="concept-box w-full mt-4">
+                            <p class="font-bold">`dbesm.py`</p>
+                            <p class="concept-explanation text-left">This module is responsible for creating new "offspring" (new task allocation plans) for the next generation. It uses a clever strategy to select "exemplars" (mentor solutions) and applies a modified Differential Evolution (DE) operator to generate diverse and high-quality new plans.</p>
+                            <p class="concept-explanation text-left mt-2"><b>Key Concepts:</b></p>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left">
+                                <li><b>Exemplar Selection:</b> Chooses a "mentor" solution from a better Pareto front that is also diverse (high CSCD) and structurally similar to the current parent. This guides the search towards promising, diverse areas.</li>
+                                <li><b>Differential Evolution (DE):</b> A powerful genetic operator that creates new solutions by combining existing ones using vector differences. Our implementation adapts this for task allocation plans.</li>
+                            </ul>
+                            <ul class="text-xs text-gray-600 list-disc list-inside text-left mt-2">
+                                <li><b>`euclidean_distance(a, b)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Two numerical lists (List[int]).</li>
+                                        <li><b>Output:</b> Euclidean distance (float).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`select_exemplar(index, flattened_pop, front_ranks, cscd_scores, F=0.2)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Index of current parent (int), flattened population (List[List[int]]), Pareto front ranks (List[int]), CSCD scores (List[float]), optional parameter F (float).</li>
+                                        <li><b>Output:</b> Index of the selected exemplar (int).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`de_generate_offspring_allocation(x_i, x_r1, x_r2, x_r3, F=0.5, CR=0.7, num_robots=3)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Parent allocation vector (List[int]), three random allocation vectors for DE (List[int]), optional parameters F (float), CR (float), num_robots (int).</li>
+                                        <li><b>Output:</b> A new allocation vector generated by DE (List[int]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`allocation_vector_to_robot_tasks(allocation_vector, num_robots)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Allocation vector (List[int]), total number of robots (int).</li>
+                                        <li><b>Output:</b> Task allocation plan (List[List[int]]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`generate_offspring(parent, use_de=True, r1=None, r2=None, r3=None, F=0.5, CR=0.7)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Parent individual (List[List[int]]), boolean flag for DE (bool), three other random individuals for DE (List[List[int]]), optional parameters F (float), CR (float).</li>
+                                        <li><b>Output:</b> Newly generated offspring individual (List[List[int]]).</li>
+                                    </ul>
+                                </li>
+                                <li><b>`dbesm_selection(population, flattened_pop, front_ranks, cscd_scores, num_robots)`</b>
+                                    <ul>
+                                        <li><b>Input:</b> Current population (List[List[List[int]]]), flattened population (List[List[int]]), Pareto front ranks (List[int]), CSCD scores (List[float]), total number of robots (int).</li>
+                                        <li><b>Output:</b> Newly generated offspring population (List[List[List[int]]]).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="results" class="section-card">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">Task Allocation Results</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">MRTA Results will be shown here</p>
+                <div class="bg-white rounded-lg shadow-md p-6 md:p-10 text-center text-gray-500 text-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Row 1 -->
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\30T_best_solution_20250711_163618.png" alt="Path Planning" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Path Planning (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\pareto_front_30T_20250711_163618.png" alt="Pareto Set" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Pareto Set (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <!-- Row 2 -->
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\30T_best_solution_20250711_160645.png" alt="Path Planning" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Path Planning (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\pareto_front_30T_20250711_160645.png" alt="Pareto Set" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Pareto Set (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <!-- Row 3 -->
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\30T_best_solution_20250711_170252.png" alt="Path Planning" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Path Planning (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\pareto_front_30T_20250711_170252.png" alt="Pareto Set" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Pareto Set (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <!-- Row 4 -->
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\30T_best_solution_20250711_162049.png" alt="Path Planning" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Path Planning (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\pareto_front_30T_20250711_162049.png" alt="Pareto Set" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Pareto Set (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <!-- Row 5 -->
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\best_solution_20250709_202335.png" alt="Path Planning" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Path Planning (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="ea_imgs\pareto_front_20250709_202335.png" alt="Pareto Set" class="rounded-lg shadow-md border border-blue-200 mb-2 w-full max-w-xl">
+                            <span class="text-xs text-gray-600">Pareto Set (Gen 200): 4 robots, 30 tasks, 200 individuals, 200 generations</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="author" class="mb-16 md:mb-12">
+                <h2 class="text-xl md:text-2xl font-bold text-center mb-2 text-[#00449E]">Infographic & Code Implementation By</h2>
+                <h3 class="text-xl md:text-2xl font-bold text-center text-gray-600">
+                <span>Priyabrata Basu</span>.
+                </h3>
+            </section>
+        </main>
+
+        <footer class="text-center mt-16 text-xs text-gray-500">
+            <p>Infographic based on the paper: "A Deep Reinforcement Learning-Assisted Multimodal Multiobjective Bilevel Optimization Method for Multirobot Task Allocation" by Yu et al., IEEE TEC, 2025.</p>
+        </footer>
+
+    </div>
+    <script>
+        function labelWrapper(label, maxLength) {
+            if (label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine.trim());
+            }
+            return lines;
+        }
+
+        const sharedTooltipOptions = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        async function callGeminiAPI(prompt) {
+            const geminiResponseDiv = document.getElementById('geminiResponse');
+            geminiResponseDiv.innerHTML = '<div class="flex items-center justify-center text-[#0170D3]"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-[#0170D3]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opatask-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opatask-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating response...</div>';
+            
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    geminiResponseDiv.innerHTML = text;
+                } else {
+                    geminiResponseDiv.innerHTML = 'Error: Could not get a valid response from the AI.';
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                geminiResponseDiv.innerHTML = 'Error: Failed to connect to the AI. Please try again.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const explainConceptBtn = document.getElementById('explainConceptBtn');
+            const suggestApplicationBtn = document.getElementById('suggestApplicationBtn');
+
+            const keyTerms = [
+                "Bi-Level Optimization",
+                "Multimodal Optimization",
+                "Deep Reinforcement Learning",
+                "GRU (Gated Recurrent Unit)",
+                "Attention Mechanism",
+                "Actor-Critic Method",
+                "Traveling Salesperson Problem (TSP)",
+                "Large Neighborhood Search (LNS)"
+            ];
+
+            explainConceptBtn.addEventListener('click', () => {
+                const randomTerm = keyTerms[Math.floor(Math.random() * keyTerms.length)];
+                const prompt = `Explain "${randomTerm}" in very simple terms for a general audience, without using technical jargon. Keep it concise, around 2-3 sentences.`;
+                callGeminiAPI(prompt);
+            });
+
+            suggestApplicationBtn.addEventListener('click', () => {
+                const prompt = `Given a multirobot task allocation problem, suggest a novel and creative real-world application scenario for the MMOEA-DL algorithm, focusing on how its ability to find diverse and efficient solutions would be beneficial. Make it concise, around 3-4 sentences.`;
+                callGeminiAPI(prompt);
+            });
+        });
+    </script>
+</body>
+</html>

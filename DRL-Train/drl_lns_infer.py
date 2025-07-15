@@ -42,7 +42,7 @@ class Actor(nn.Module):
     def forward(self, input_coords, seq_len):
         # input_coords: (B, S, 2)
 
-        embedded = self.ff_layer(input_coords)
+        embedded = self.ff_layer(input_coords) 
         encoder_outputs, encoder_hidden = self.gru_encoder(embedded)
 
         batch_size = input_coords.size(0)
