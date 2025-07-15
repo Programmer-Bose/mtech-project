@@ -402,19 +402,19 @@
                             <h4 class="text-center font-bold text-[#00449E] mb-2">The <b>Actor</b> (Policy Network)</h4>
                             <p class="text-sm text-gray-600 text-center mb-4">The Actor's job is to decide <b>what action to take</b> given the current situation (state). In our case, it decides which task the robot should visit next to build the optimal path.</p>
                             <p class="text-sm text-gray-600 text-center mt-2"><b>How it learns:</b> It adjusts its strategy based on the "Advantage" signal from the Critic. If an action led to a better-than-expected outcome, the Actor is more likely to take that action again.</p>
-                            <img class= "mt-4" src="actorloss.jpg" alt="al">
+                            <img class= "mt-4" src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/actorloss.jpg" alt="al">
                         </div>
                         <div class="p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF] flex flex-col items-center">
                             <h4 class="text-center font-bold text-[#00449E] mb-2">The <b>Critic</b> (Value Network)</h4>
                             <p class="text-sm text-gray-600 text-center mb-4">The Critic's job is to <b>evaluate how good the current situation (state) is</b>. It provides an estimate of the total future rewards the agent can expect from that state.</p>
                             <p class="text-sm text-gray-600 text-center mt-2"><b>How it learns:</b> It adjusts its predictions to be closer to the actual rewards received. If it underestimated the goodness of a state, it learns to predict higher next time, and vice-versa.</p>
-                            <img class= "mt-4" src="criticloss.jpg" alt="cl">
+                            <img class= "mt-4" src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/criticloss.jpg" alt="cl">
                         </div>
                         <div class="p-4 border rounded-lg border-[#A1C6F8] bg-[#F0F8FF] flex flex-col items-center">
                             <h4 class="text-center font-bold text-[#00449E] mb-2"><b>The Advantage Function</b> Bridging Actor & Critic</h4>
                             <p class="text-sm text-gray-600 text-center mb-4">The <b>Advantage A(s,a)</b> is the key signal that connects the Actor and Critic. It tells the Actor not just if an action was good, but <b>how much better or worse it was than what the Critic expected</b>.</p>
                             <p class="text-sm text-gray-600 text-center mt-2"><b>How it Works:</b>This makes the Actor's learning more stable and efficient, as it focuses on surprising outcomes rather than just raw rewards.</p>
-                            <img class= "mt-4" src="advantage.jpg" alt="adv">
+                            <img class= "mt-4" src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/advantage.jpg" alt="adv">
                         </div>
                     </div>
             
@@ -488,7 +488,7 @@
                     </div>
                     <hr class="my-8 border-t-2 border-dashed border-[#A1C6F8]">
                     <p class="text-gray-500 font-semibold mt-8 max-w-4xl mx-auto">
-                        <img class= "mt-4" width=100% src="lns.jpg" alt="lns">
+                        <img class= "mt-4" width=100% src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/lns.jpg" alt="lns">
                         It can be observed that the destroy operator is used to randomly select
                         two task points (i.e., “3” and “4”) from the individual, and
                         then obtain a destroy individual (i.e., “1” → “2” → “5”).
@@ -511,7 +511,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-[#00449E]">DRL + LNS : Results</h2>
                 <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">Side by side comparison of Path Planning by DRL & DRL+LNS </p>
                 <div class="bg-white rounded-lg shadow-md p-6 md:p-10 text-lg text-gray-500 text-lg">
-                    <img class="text-center" src="drl_lns.jpeg" alt="comparison1">
+                    <img class="text-center" src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/drl_lns.jpeg" alt="comparison1">
                     <p class="text-lg">
                             --- Initial Tour from RL Model ---<br>
                             RL Inferred tour (indices): [4, 17, 23, 18, 9, 25, 6, 22, 20, 34, 13, 27, 16, 21, 1, 15, 11, 29, 7, 10, 5, 30, 24, 33, 32, 12, 38, 26, 8, 14, 37, 19, 35, 36, 2, 28, 3, 39, 0, 31]<br>
@@ -529,7 +529,7 @@
                             LNS improved tour by: 0.1725<br>
                         </p>
                         <hr class="my-8 border-t-2 border-dashed border-[#A1C6F8]">
-                        <img class="text-center"  src="drl_lns1.jpeg" alt="comparison2">
+                        <img class="text-center"  src="https://raw.githubusercontent.com/Programmer-Bose/mtech-project/refs/heads/main/Presentation/drl_lns1.jpeg" alt="comparison2">
                         <p class="text-lg">
                                                     --- Initial Tour from RL Model ---<br>
                             RL Inferred tour (indices): [10, 11, 12, 2, 5, 15, 1, 14, 6, 8, 19, 17, 9, 7, 18, 3, 13, 0, 4, 16]<br>
